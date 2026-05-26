@@ -38,7 +38,7 @@ export default function PromptNestSplash({ onFinish, duration = 2600 }: Props) {
         toValue: 1,
         duration: 1100,
         useNativeDriver: true,
-      })
+      }),
     );
 
     animation.start();
@@ -79,7 +79,7 @@ export default function PromptNestSplash({ onFinish, duration = 2600 }: Props) {
 
       <View style={styles.content}>
         <Image
-          source={require("@/assets/images/logo.png")}
+          source={require("@/assets/images/logo/logo.png")}
           style={styles.logoImage}
           resizeMode="contain"
         />
