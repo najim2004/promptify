@@ -1,4 +1,5 @@
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { Image, type ImageProps } from "expo-image";
 import {
   Dimensions,
@@ -257,18 +258,24 @@ function PromptCardItem({ item }: { item: PromptCard }) {
 }
 
 function BottomTabBar({ bottomInset }: { bottomInset: number }) {
+  const router = useRouter();
   const tabs = [
-    { label: "Home", icon: "home", active: true },
+    { label: "Home", icon: "home", active: true, onPress: () => router.replace("/") },
     { label: "Search", icon: "search", active: false },
-    { label: "Categories", icon: "grid", active: false },
+    { label: "Categories", icon: "grid", active: false, onPress: () => router.push("/explore") },
     { label: "Saved", icon: "bookmark", active: false },
-    { label: "Profile", icon: "user", active: false },
+    { label: "Profile", icon: "user", active: false, onPress: () => router.push("./sign-in") },
   ];
 
   return (
     <View style={[styles.bottomBar, { paddingBottom: Math.max(bottomInset, 12) }]}>
       {tabs.map((tab) => (
-        <TouchableOpacity key={tab.label} activeOpacity={0.75} style={styles.tabItem}>
+        <TouchableOpacity
+          key={tab.label}
+          activeOpacity={0.75}
+          onPress={tab.onPress}
+          style={styles.tabItem}
+        >
           <Feather name={tab.icon as any} size={22} color={tab.active ? "#7047F8" : "#4B5563"} />
           <Text style={[styles.tabText, tab.active && styles.activeTabText]}>{tab.label}</Text>
         </TouchableOpacity>
