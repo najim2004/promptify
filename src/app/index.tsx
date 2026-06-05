@@ -1,25 +1,16 @@
-import React from "react";
+import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Image, type ImageProps } from "expo-image";
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
+  Dimensions,
   ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  StatusBar,
-  Dimensions,
-  ImageSourcePropType,
+  View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import {
-  useFonts,
-  Poppins_400Regular,
-  Poppins_500Medium,
-  Poppins_600SemiBold,
-  Poppins_700Bold,
-} from "@expo-google-fonts/poppins";
 
 const { width } = Dimensions.get("window");
 
@@ -34,7 +25,7 @@ type PromptCard = {
   type: PromptCardType;
   title: string;
   tool: "Midjourney" | "Runway" | "ChatGPT";
-  image?: ImageSourcePropType;
+  image?: ImageProps["source"];
   duration?: string;
 };
 
@@ -96,15 +87,6 @@ const categories = [
 export default function PromptNestHomeScreen() {
   const insets = useSafeAreaInsets();
 
-  const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_500Medium,
-    Poppins_600SemiBold,
-    Poppins_700Bold,
-  });
-
-  if (!fontsLoaded) return null;
-
   const leftColumn = prompts.filter((_, index) => index % 2 === 0);
   const rightColumn = prompts.filter((_, index) => index % 2 !== 0);
 
@@ -118,7 +100,8 @@ export default function PromptNestHomeScreen() {
             <Image
               source={require("@/assets/promptnest/logo.png")}
               style={styles.logo}
-              resizeMode="contain"
+              contentFit="contain"
+              cachePolicy="memory-disk"
             />
             <Text style={styles.brandText}>PromptNest</Text>
           </View>
@@ -172,10 +155,7 @@ export default function PromptNestHomeScreen() {
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.feedContent,
-            { paddingBottom: insets.bottom + 84 },
-          ]}
+          contentContainerStyle={[styles.feedContent, { paddingBottom: insets.bottom + 84 }]}
         >
           <View style={styles.grid}>
             <View style={styles.column}>
@@ -207,11 +187,7 @@ function PromptCardItem({ item }: { item: PromptCard }) {
       {isText ? (
         <View style={styles.textCardBody}>
           <View style={styles.smallPurpleIcon}>
-            <MaterialCommunityIcons
-              name="message-text"
-              size={12}
-              color="#FFFFFF"
-            />
+            <MaterialCommunityIcons name="message-text" size={12} color="#FFFFFF" />
           </View>
 
           <Text style={styles.textPromptTitle} numberOfLines={6}>
@@ -223,11 +199,9 @@ function PromptCardItem({ item }: { item: PromptCard }) {
           {item.image && (
             <Image
               source={item.image}
-              style={[
-                styles.cardImage,
-                isCode && styles.codeImage,
-              ]}
-              resizeMode="cover"
+              style={[styles.cardImage, isCode && styles.codeImage]}
+              contentFit="cover"
+              cachePolicy="memory-disk"
             />
           )}
 
@@ -295,14 +269,8 @@ function BottomTabBar({ bottomInset }: { bottomInset: number }) {
     <View style={[styles.bottomBar, { paddingBottom: Math.max(bottomInset, 12) }]}>
       {tabs.map((tab) => (
         <TouchableOpacity key={tab.label} activeOpacity={0.75} style={styles.tabItem}>
-          <Feather
-            name={tab.icon as any}
-            size={22}
-            color={tab.active ? "#7047F8" : "#4B5563"}
-          />
-          <Text style={[styles.tabText, tab.active && styles.activeTabText]}>
-            {tab.label}
-          </Text>
+          <Feather name={tab.icon as any} size={22} color={tab.active ? "#7047F8" : "#4B5563"} />
+          <Text style={[styles.tabText, tab.active && styles.activeTabText]}>{tab.label}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -398,6 +366,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: HORIZONTAL_PADDING,
     paddingTop: 16,
     paddingBottom: 12,
+    marginBottom: 16,
+    backgroundColor: "transparent",
   },
 
   chip: {

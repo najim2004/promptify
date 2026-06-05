@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 type BrandHeaderProps = {
   showLogo?: boolean;
@@ -21,7 +22,8 @@ export function BrandHeader({
           <Image
             source={require("@/assets/images/logo/logo.png")}
             style={styles.brandLogo}
-            resizeMode="contain"
+            contentFit="contain"
+            cachePolicy="memory-disk"
           />
           <Text style={styles.brandText}>{brandText}</Text>
         </View>

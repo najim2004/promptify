@@ -1,15 +1,9 @@
-import {
-  Montserrat_400Regular,
-  Montserrat_600SemiBold,
-  Montserrat_700Bold,
-  useFonts,
-} from "@expo-google-fonts/montserrat";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Animated,
   Dimensions,
-  Image,
   StatusBar,
   StyleSheet,
   Text,
@@ -23,14 +17,8 @@ type Props = {
   duration?: number;
 };
 
-export default function PromptNestSplash({ onFinish, duration = 2600 }: Props) {
-  const rotateValue = useRef(new Animated.Value(0)).current;
-
-  const [fontsLoaded] = useFonts({
-    Montserrat_400Regular,
-    Montserrat_600SemiBold,
-    Montserrat_700Bold,
-  });
+export default function PromptNestSplash({ onFinish, duration = 1200 }: Props) {
+  const [rotateValue] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     const animation = Animated.loop(
@@ -52,8 +40,6 @@ export default function PromptNestSplash({ onFinish, duration = 2600 }: Props) {
       clearTimeout(timer);
     };
   }, [duration, onFinish, rotateValue]);
-
-  if (!fontsLoaded) return null;
 
   const rotate = rotateValue.interpolate({
     inputRange: [0, 1],
@@ -81,7 +67,8 @@ export default function PromptNestSplash({ onFinish, duration = 2600 }: Props) {
         <Image
           source={require("@/assets/images/logo/logo.png")}
           style={styles.logoImage}
-          resizeMode="contain"
+          contentFit="contain"
+          cachePolicy="memory-disk"
         />
 
         <Text style={styles.title}>Promptify</Text>

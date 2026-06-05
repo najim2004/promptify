@@ -1,15 +1,8 @@
-import {
-  Poppins_400Regular,
-  Poppins_500Medium,
-  Poppins_600SemiBold,
-  Poppins_700Bold,
-  useFonts,
-} from "@expo-google-fonts/poppins";
+import { Image } from "expo-image";
 import React, { useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
-  Image,
   NativeScrollEvent,
   NativeSyntheticEvent,
   StatusBar,
@@ -76,15 +69,6 @@ export default function OnboardingScreen({ onFinish }: Props) {
   const flatListRef = useRef<FlatList<SlideItem>>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_500Medium,
-    Poppins_600SemiBold,
-    Poppins_700Bold,
-  });
-
-  if (!fontsLoaded) return null;
-
   const handleNext = () => {
     if (activeIndex < slides.length - 1) {
       flatListRef.current?.scrollToIndex({
@@ -140,7 +124,8 @@ export default function OnboardingScreen({ onFinish }: Props) {
               <Image
                 source={item.image}
                 style={styles.illustration}
-                resizeMode="contain"
+                contentFit="contain"
+                cachePolicy="memory-disk"
               />
             </View>
 
