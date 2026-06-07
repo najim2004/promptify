@@ -1,6 +1,7 @@
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Image, type ImageProps } from "expo-image";
+import React from "react";
 import {
   Dimensions,
   ScrollView,
@@ -30,50 +31,49 @@ type PromptCard = {
   duration?: string;
 };
 
-const prompts: PromptCard[] = [
+const searchPrompts: PromptCard[] = [
   {
     id: "1",
     type: "image",
     title: "Cinematic cyberpunk city at night with neon lights and rain reflections",
     tool: "Midjourney",
-    image: require("@/assets/promptnest/cyberpunk.png"),
+    image: require("@/assets/promptify/cyberpunk.png"),
   },
   {
     id: "2",
-    type: "video",
-    title: "Astronaut exploring a distant planet in 4K",
+    type: "image",
+    title: "Cyberpunk girl portrait with neon lights and futuristic makeup",
     tool: "Runway",
-    image: require("@/assets/promptnest/astronaut.png"),
-    duration: "0:08",
+    image: require("@/assets/promptify/portrait.png"),
   },
   {
     id: "3",
     type: "text",
     title:
-      "Write a Twitter thread about the future of AI in education. Include 5 key points and end with a call to action for teachers.",
+      "Write a short story set in a cyberpunk future where AI controls the city and hackers fight for freedom.",
     tool: "ChatGPT",
   },
   {
     id: "4",
-    type: "image",
-    title: "Cozy cabin in the woods surrounded by mist and a flowing river",
-    tool: "Midjourney",
-    image: require("@/assets/promptnest/cabin.png"),
+    type: "video",
+    title: "Cinematic cyberpunk bike chase through neon city at night",
+    tool: "Runway",
+    image: require("@/assets/promptify/bike_chase.png"),
+    duration: "0:08",
   },
   {
     id: "5",
-    type: "video",
-    title: "Cinematic portrait with neon lighting and bokeh",
-    tool: "Runway",
-    image: require("@/assets/promptnest/portrait.png"),
-    duration: "0:06",
+    type: "image",
+    title: "Cyberpunk street scene with neon signs and wet reflections",
+    tool: "Midjourney",
+    image: require("@/assets/promptify/street_scene.png"),
   },
   {
     id: "6",
     type: "code",
-    title: "Python function to generate Fibonacci sequence",
+    title: "Python function to generate a cyberpunk scene with neon lighting",
     tool: "ChatGPT",
-    image: require("@/assets/promptnest/code.png"),
+    image: require("@/assets/promptify/code_cyberpunk.png"),
   },
 ];
 
@@ -82,29 +82,28 @@ const categories = [
   { label: "AI Image", icon: "image-outline" },
   { label: "AI Video", icon: "play-outline" },
   { label: "ChatGPT", icon: "sparkles-outline" },
-  { label: "Design", icon: "brush-outline" },
 ];
 
-export default function PromptNestHomeScreen() {
+export default function SearchScreen() {
   const insets = useSafeAreaInsets();
-
-  const leftColumn = prompts.filter((_, index) => index % 2 === 0);
-  const rightColumn = prompts.filter((_, index) => index % 2 !== 0);
+  const leftColumn = searchPrompts.filter((_, index) => index % 2 === 0);
+  const rightColumn = searchPrompts.filter((_, index) => index % 2 !== 0);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <View style={styles.container}>
+        {/* Header */}
         <View style={styles.header}>
           <View style={styles.brandArea}>
             <Image
-              source={require("@/assets/promptnest/logo.png")}
+              source={require("@/assets/promptify/logo.png")}
               style={styles.logo}
               contentFit="contain"
               cachePolicy="memory-disk"
             />
-            <Text style={styles.brandText}>PromptNest</Text>
+            <Text style={styles.brandText}>Promptify</Text>
           </View>
 
           <TouchableOpacity activeOpacity={0.75} style={styles.notificationBtn}>
@@ -115,13 +114,19 @@ export default function PromptNestHomeScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.searchBox}>
-          <Feather name="search" size={20} color="#374151" />
-          <TextInput
-            placeholder="Search prompts, tools, or categories..."
-            placeholderTextColor="#606879"
-            style={styles.searchInput}
-          />
+        <View style={styles.searchRow}>
+          <View style={styles.searchBoxCustom}>
+            <Feather name="search" size={20} color="#374151" />
+            <TextInput
+              defaultValue="cyberpunk"
+              placeholder="Search prompts, tools, or categories..."
+              placeholderTextColor="#606879"
+              style={styles.searchInput}
+            />
+          </View>
+          <TouchableOpacity style={styles.filterButton} activeOpacity={0.75}>
+            <Feather name="sliders" size={20} color="#374151" />
+          </TouchableOpacity>
         </View>
 
         <ScrollView
@@ -172,8 +177,6 @@ export default function PromptNestHomeScreen() {
             </View>
           </View>
         </ScrollView>
-
-        <BottomTabBar bottomInset={insets.bottom} />
       </View>
     </SafeAreaView>
   );
@@ -188,7 +191,7 @@ function PromptCardItem({ item }: { item: PromptCard }) {
       {isText ? (
         <View style={styles.textCardBody}>
           <View style={styles.smallPurpleIcon}>
-            <MaterialCommunityIcons name="message-text" size={12} color="#FFFFFF" />
+            <MaterialCommunityIcons name="message-text" size={14} color="#FFFFFF" />
           </View>
 
           <Text style={styles.textPromptTitle} numberOfLines={6}>
@@ -208,18 +211,14 @@ function PromptCardItem({ item }: { item: PromptCard }) {
 
           <View style={styles.mediaIcon}>
             <Ionicons
-              name={item.type === "video" ? "videocam" : "image"}
+              name={item.type === "video" ? "play" : isCode ? "code-slash" : "image"}
               size={12}
-              color="#7648F8"
+              color="#FFFFFF"
             />
           </View>
 
           {item.type === "video" && (
             <>
-              <View style={styles.playBtn}>
-                <Ionicons name="play" size={22} color="#111827" />
-              </View>
-
               {item.duration && (
                 <View style={styles.durationBadge}>
                   <Text style={styles.durationText}>{item.duration}</Text>
@@ -242,12 +241,14 @@ function PromptCardItem({ item }: { item: PromptCard }) {
             {item.tool === "ChatGPT" ? (
               <MaterialCommunityIcons name="chat-processing" size={16} color="#20B486" />
             ) : item.tool === "Runway" ? (
-              <Text style={styles.runwayIcon}>R</Text>
+              <Ionicons name="infinite" size={16} color="#111827" />
             ) : (
-              <Text style={styles.midjourneyIcon}>△</Text>
+              <Ionicons name="boat-outline" size={16} color="#7047F8" />
             )}
 
-            <Text style={styles.toolName}>{item.tool}</Text>
+            <Text style={[styles.toolName, item.tool === "Midjourney" && styles.midjourneyToolText]}>
+              {item.tool}
+            </Text>
           </View>
 
           <Feather name="bookmark" size={18} color="#4B5563" />
@@ -257,44 +258,15 @@ function PromptCardItem({ item }: { item: PromptCard }) {
   );
 }
 
-function BottomTabBar({ bottomInset }: { bottomInset: number }) {
-  const router = useRouter();
-  const tabs = [
-    { label: "Home", icon: "home", active: true, onPress: () => router.replace("/") },
-    { label: "Search", icon: "search", active: false },
-    { label: "Categories", icon: "grid", active: false, onPress: () => router.push("/explore") },
-    { label: "Saved", icon: "bookmark", active: false },
-    { label: "Profile", icon: "user", active: false, onPress: () => router.push("./sign-in") },
-  ];
-
-  return (
-    <View style={[styles.bottomBar, { paddingBottom: Math.max(bottomInset, 12) }]}>
-      {tabs.map((tab) => (
-        <TouchableOpacity
-          key={tab.label}
-          activeOpacity={0.75}
-          onPress={tab.onPress}
-          style={styles.tabItem}
-        >
-          <Feather name={tab.icon as any} size={22} color={tab.active ? "#7047F8" : "#4B5563"} />
-          <Text style={[styles.tabText, tab.active && styles.activeTabText]}>{tab.label}</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-
   header: {
     paddingHorizontal: HORIZONTAL_PADDING,
     paddingTop: 8,
@@ -303,32 +275,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-
   brandArea: {
     flexDirection: "row",
     alignItems: "center",
   },
-
   logo: {
     width: 32,
     height: 32,
     marginRight: 10,
   },
-
   brandText: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 22,
     color: "#111827",
     letterSpacing: 0.1,
   },
-
   notificationBtn: {
     width: 36,
     height: 36,
     alignItems: "center",
     justifyContent: "center",
   },
-
   badge: {
     position: "absolute",
     top: 1,
@@ -341,17 +308,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 4,
   },
-
   badgeText: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 9,
     color: "#FFFFFF",
   },
-
-  searchBox: {
+  searchRow: {
+    flexDirection: "row",
+    alignItems: "center",
     marginHorizontal: HORIZONTAL_PADDING,
+    gap: 10,
+  },
+  searchBoxCustom: {
+    flex: 1,
     height: 48,
-    borderRadius: 16,
+    borderRadius: 24,
     borderWidth: 1,
     borderColor: "#DCDDE6",
     backgroundColor: "#FFFFFF",
@@ -359,7 +330,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
   },
-
   searchInput: {
     flex: 1,
     marginLeft: 10,
@@ -368,7 +338,16 @@ const styles = StyleSheet.create({
     color: "#111827",
     paddingVertical: 0,
   },
-
+  filterButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "#DCDDE6",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+  },
   categoryRow: {
     paddingHorizontal: HORIZONTAL_PADDING,
     paddingTop: 16,
@@ -376,7 +355,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: "transparent",
   },
-
   chip: {
     height: 38,
     paddingHorizontal: 16,
@@ -389,40 +367,32 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 8,
   },
-
   activeChip: {
     backgroundColor: "#7047F8",
     borderColor: "#7047F8",
   },
-
   chipIcon: {
     marginRight: 6,
   },
-
   chipText: {
     fontFamily: "Poppins_500Medium",
     fontSize: 13,
     color: "#1F2937",
   },
-
   activeChipText: {
     color: "#FFFFFF",
   },
-
   feedContent: {
     paddingHorizontal: HORIZONTAL_PADDING,
   },
-
   grid: {
     flexDirection: "row",
     alignItems: "flex-start",
   },
-
   column: {
     width: CARD_WIDTH,
     marginRight: COLUMN_GAP,
   },
-
   card: {
     width: CARD_WIDTH,
     backgroundColor: "#FFFFFF",
@@ -432,49 +402,30 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     overflow: "hidden",
   },
-
   imageBox: {
     width: "100%",
     height: 130,
     backgroundColor: "#F4F5FA",
     position: "relative",
   },
-
   cardImage: {
     width: "100%",
     height: "100%",
   },
-
   codeImage: {
     backgroundColor: "#111827",
   },
-
   mediaIcon: {
     position: "absolute",
     top: 10,
     left: 10,
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    backgroundColor: "#FFFFFF",
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: "#7047F8",
     alignItems: "center",
     justifyContent: "center",
   },
-
-  playBtn: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    marginLeft: -22,
-    marginTop: -22,
-  },
-
   durationBadge: {
     position: "absolute",
     right: 6,
@@ -484,43 +435,37 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
-
   durationText: {
     fontFamily: "Poppins_500Medium",
     color: "#FFFFFF",
     fontSize: 11,
   },
-
   textCardBody: {
     minHeight: 180,
     paddingHorizontal: 16,
     paddingTop: 16,
     backgroundColor: "#FAF9FF",
   },
-
   smallPurpleIcon: {
     width: 26,
     height: 26,
-    borderRadius: 8,
+    borderRadius: 13,
     backgroundColor: "#7047F8",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
   },
-
   textPromptTitle: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 13,
     lineHeight: 18,
     color: "#111827",
   },
-
   cardFooter: {
     paddingHorizontal: 12,
     paddingTop: 10,
     paddingBottom: 10,
   },
-
   cardTitle: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 12,
@@ -528,66 +473,22 @@ const styles = StyleSheet.create({
     color: "#111827",
     marginBottom: 8,
   },
-
   toolRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-
   toolInfo: {
     flexDirection: "row",
     alignItems: "center",
   },
-
   toolName: {
     fontFamily: "Poppins_400Regular",
     fontSize: 11,
     color: "#7047F8",
     marginLeft: 6,
   },
-
-  runwayIcon: {
-    fontFamily: "Poppins_700Bold",
-    fontSize: 15,
-    color: "#111827",
-  },
-
-  midjourneyIcon: {
-    fontFamily: "Poppins_500Medium",
-    fontSize: 15,
-    color: "#111827",
-  },
-
-  bottomBar: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingTop: 10,
-    paddingHorizontal: 10,
-    backgroundColor: "#FFFFFF",
-    borderTopWidth: 1,
-    borderTopColor: "#ECEEF4",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-
-  tabItem: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  tabText: {
-    marginTop: 4,
-    fontFamily: "Poppins_400Regular",
-    fontSize: 11,
-    color: "#4B5563",
-  },
-
-  activeTabText: {
+  midjourneyToolText: {
     color: "#7047F8",
   },
 });

@@ -11,7 +11,7 @@ export default function VerifyEmailRoute() {
       email={params.email ?? 'your email address'}
       onBack={() => router.back()}
       onResend={() => undefined}
-      onVerify={() => router.replace('/')}
+      onVerify={() => router.replace('/' as any)}
     />
   );
 }

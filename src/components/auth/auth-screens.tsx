@@ -73,12 +73,12 @@ function BrandHeader({ centered = false }: { centered?: boolean }) {
   return (
     <View style={[styles.brandRow, centered && styles.centerBrand]}>
       <Image
-        source={require('@/assets/promptnest/logo.png')}
+        source={require('@/assets/promptify/logo.png')}
         style={styles.logo}
         contentFit="contain"
         cachePolicy="memory-disk"
       />
-      <Text style={styles.brandText}>PromptNest</Text>
+      <Text style={styles.brandText}>Promptify</Text>
     </View>
   );
 }
@@ -312,7 +312,7 @@ export function SignUpScreen({
 
       <Text style={styles.largeTitle}>Create Your Account</Text>
       <Text style={styles.subtitle}>
-        Join PromptNest and unlock powerful prompts across every category.
+        Join Promptify and unlock powerful prompts across every category.
       </Text>
 
       <View style={styles.signUpFormArea}>
@@ -500,7 +500,7 @@ export function ResetPasswordScreen({
       <AuthIllustration variant="reset" />
 
       <Text style={styles.centerTitle}>Reset Password</Text>
-      <Text style={styles.centerSubtitle}>Create a new secure password for your PromptNest account.</Text>
+      <Text style={styles.centerSubtitle}>Create a new secure password for your Promptify account.</Text>
 
       <View style={styles.resetFormArea}>
         <AuthInput

@@ -17,7 +17,7 @@ type Props = {
   duration?: number;
 };
 
-export default function PromptNestSplash({ onFinish, duration = 1200 }: Props) {
+export default function PromptifySplash({ onFinish, duration = 1200 }: Props) {
   const [rotateValue] = useState(() => new Animated.Value(0));
 
   useEffect(() => {

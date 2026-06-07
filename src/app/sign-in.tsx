@@ -8,7 +8,7 @@ export default function SignInRoute() {
   return (
     <SignInScreen
       onForgotPassword={() => router.push('./forgot-password')}
-      onSignIn={() => router.replace('/')}
+      onSignIn={() => router.replace('/' as any)}
       onSignUp={() => router.push('./sign-up')}
     />
   );

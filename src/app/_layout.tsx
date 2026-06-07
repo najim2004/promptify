@@ -15,7 +15,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, useColorScheme, View } from 'react-native';
 
-import PromptNestSplash from '@/components/splash-screen';
+import PromptifySplash from '@/components/splash-screen';
 import OnboardingScreen from '@/components/onboarding';
 
 void SplashScreen.preventAutoHideAsync();
@@ -65,15 +65,14 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       {isSplashVisible ? (
-        <PromptNestSplash
+        <PromptifySplash
           duration={CUSTOM_SPLASH_DURATION_MS}
           onFinish={handleSplashFinish}
         />
       ) : (
         <View style={styles.appShell}>
           <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="explore" />
+            <Stack.Screen name="(tabs)" />
             <Stack.Screen name="sign-in" />
             <Stack.Screen name="sign-up" />
             <Stack.Screen name="forgot-password" />
