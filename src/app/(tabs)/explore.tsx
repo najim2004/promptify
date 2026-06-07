@@ -1,180 +1,281 @@
-import { Image } from 'expo-image';
-import { SymbolView } from 'expo-symbols';
-import { Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
+import {
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { ExternalLink } from '@/components/external-link';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Collapsible } from '@/components/ui/collapsible';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+const HORIZONTAL_PADDING = 16;
 
-export default function TabTwoScreen() {
-  const safeAreaInsets = useSafeAreaInsets();
-  const insets = {
-    ...safeAreaInsets,
-    bottom: safeAreaInsets.bottom + BottomTabInset + Spacing.three,
-  };
-  const theme = useTheme();
+const categoriesList = [
+  {
+    id: "1",
+    name: "AI Image",
+    count: "4.7K Prompts",
+    colors: ["#F3A052", "#C65A11"] as const,
+    iconType: "feather",
+    iconName: "image",
+  },
+  {
+    id: "2",
+    name: "AI Video",
+    count: "3.2K Prompts",
+    colors: ["#5D54FA", "#2F26B8"] as const,
+    iconType: "feather",
+    iconName: "video",
+  },
+  {
+    id: "3",
+    name: "ChatGPT",
+    count: "8.6K Prompts",
+    colors: ["#2EC092", "#0E7C58"] as const,
+    iconType: "material-community",
+    iconName: "chat-processing-outline",
+  },
+  {
+    id: "4",
+    name: "Design",
+    count: "2.1K Prompts",
+    colors: ["#9F82FF", "#5D3CDB"] as const,
+    iconType: "feather",
+    iconName: "pen-tool",
+  },
+  {
+    id: "5",
+    name: "Marketing",
+    count: "5.4K Prompts",
+    colors: ["#EC609B", "#B72064"] as const,
+    iconType: "material-community",
+    iconName: "bullhorn-outline",
+  },
+  {
+    id: "6",
+    name: "Coding",
+    count: "3.7K Prompts",
+    colors: ["#3DCA74", "#1E6C3B"] as const,
+    iconType: "feather",
+    iconName: "code",
+  },
+  {
+    id: "7",
+    name: "Business",
+    count: "4.1K Prompts",
+    colors: ["#398EFA", "#104DA5"] as const,
+    iconType: "feather",
+    iconName: "bar-chart-2",
+  },
+  {
+    id: "8",
+    name: "Productivity",
+    count: "3.0K Prompts",
+    colors: ["#F9AC34", "#C67608"] as const,
+    iconType: "material-community",
+    iconName: "file-check-outline",
+  },
+];
 
-  const contentPlatformStyle = Platform.select({
-    android: {
-      paddingTop: insets.top,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-      paddingBottom: insets.bottom,
-    },
-    web: {
-      paddingTop: Spacing.six,
-      paddingBottom: Spacing.four,
-    },
-  });
+export default function ExploreCategoriesScreen() {
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   return (
-    <ScrollView
-      style={[styles.scrollView, { backgroundColor: theme.background }]}
-      contentInset={insets}
-      contentContainerStyle={[styles.contentContainer, contentPlatformStyle]}>
-      <ThemedView style={styles.container}>
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="subtitle">Explore</ThemedText>
-          <ThemedText style={styles.centerText} themeColor="textSecondary">
-            This starter app includes example{'\n'}code to help you get started.
-          </ThemedText>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-          <ExternalLink href="https://docs.expo.dev" asChild>
-            <Pressable style={({ pressed }) => pressed && styles.pressed}>
-              <ThemedView type="backgroundElement" style={styles.linkButton}>
-                <ThemedText type="link">Expo documentation</ThemedText>
-                <SymbolView
-                  tintColor={theme.text}
-                  name={{ ios: 'arrow.up.right.square', android: 'link', web: 'link' }}
-                  size={12}
-                />
-              </ThemedView>
-            </Pressable>
-          </ExternalLink>
-        </ThemedView>
+      <View style={styles.container}>
+        {/* Brand Header */}
+        <View style={styles.header}>
+          <View style={styles.brandArea}>
+            <Image
+              source={require("@/assets/promptify/logo.png")}
+              style={styles.logo}
+              contentFit="contain"
+              cachePolicy="memory-disk"
+            />
+            <Text style={styles.brandText}>Promptify</Text>
+          </View>
 
-        <ThemedView style={styles.sectionsWrapper}>
-          <Collapsible title="File-based routing">
-            <ThemedText type="small">
-              This app has two screens: <ThemedText type="code">src/app/index.tsx</ThemedText> and{' '}
-              <ThemedText type="code">src/app/explore.tsx</ThemedText>
-            </ThemedText>
-            <ThemedText type="small">
-              The layout file in <ThemedText type="code">src/app/_layout.tsx</ThemedText> sets up
-              the tab navigator.
-            </ThemedText>
-            <ExternalLink href="https://docs.expo.dev/router/introduction">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
+          <TouchableOpacity activeOpacity={0.75} style={styles.notificationBtn}>
+            <Feather name="bell" size={22} color="#111827" />
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>3</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
 
-          <Collapsible title="Android, iOS, and web support">
-            <ThemedView type="backgroundElement" style={styles.collapsibleContent}>
-              <ThemedText type="small">
-                You can open this project on Android, iOS, and the web. To open the web version,
-                press <ThemedText type="smallBold">w</ThemedText> in the terminal running this
-                project.
-              </ThemedText>
-              <Image
-                source={require('@/assets/images/tutorial-web.png')}
-                style={styles.imageTutorial}
-              />
-            </ThemedView>
-          </Collapsible>
+        {/* Categories Section Title */}
+        <View style={styles.titleRow}>
+          <Text style={styles.pageTitle}>Categories</Text>
+          <TouchableOpacity style={styles.searchButton} activeOpacity={0.75}>
+            <Feather name="search" size={20} color="#374151" />
+          </TouchableOpacity>
+        </View>
 
-          <Collapsible title="Images">
-            <ThemedText type="small">
-              For static images, you can use the <ThemedText type="code">@2x</ThemedText> and{' '}
-              <ThemedText type="code">@3x</ThemedText> suffixes to provide files for different
-              screen densities.
-            </ThemedText>
-            <Image source={require('@/assets/images/react-logo.png')} style={styles.imageReact} />
-            <ExternalLink href="https://reactnative.dev/docs/images">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
+        {/* Scrollable list */}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 84 }]}
+        >
+          {categoriesList.map((item) => (
+            <TouchableOpacity key={item.id} style={styles.categoryCard} activeOpacity={0.8}>
+              <View style={styles.cardLeft}>
+                <LinearGradient
+                  colors={item.colors}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.iconGradient}
+                >
+                  {item.iconType === "feather" ? (
+                    <Feather name={item.iconName as any} size={20} color="#FFFFFF" />
+                  ) : (
+                    <MaterialCommunityIcons name={item.iconName as any} size={22} color="#FFFFFF" />
+                  )}
+                </LinearGradient>
 
-          <Collapsible title="Light and dark mode components">
-            <ThemedText type="small">
-              This template has light and dark mode support. The{' '}
-              <ThemedText type="code">useColorScheme()</ThemedText> hook lets you inspect what the
-              user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-            </ThemedText>
-            <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
+                <View style={styles.textGroup}>
+                  <Text style={styles.categoryName}>{item.name}</Text>
+                  <Text style={styles.categoryCount}>{item.count}</Text>
+                </View>
+              </View>
 
-          <Collapsible title="Animations">
-            <ThemedText type="small">
-              This template includes an example of an animated component. The{' '}
-              <ThemedText type="code">src/components/ui/collapsible.tsx</ThemedText> component uses
-              the powerful <ThemedText type="code">react-native-reanimated</ThemedText> library to
-              animate opening this hint.
-            </ThemedText>
-          </Collapsible>
-        </ThemedView>
-        {Platform.OS === 'web' && <WebBadge />}
-      </ThemedView>
-    </ScrollView>
+              <Feather name="chevron-right" size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
+  safeArea: {
     flex: 1,
-  },
-  contentContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    backgroundColor: "#FFFFFF",
   },
   container: {
-    maxWidth: MaxContentWidth,
-    flexGrow: 1,
+    flex: 1,
+    backgroundColor: "#FFFFFF",
   },
-  titleContainer: {
-    gap: Spacing.three,
-    alignItems: 'center',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.six,
+  header: {
+    paddingHorizontal: HORIZONTAL_PADDING,
+    paddingTop: 8,
+    paddingBottom: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-  centerText: {
-    textAlign: 'center',
+  brandArea: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  pressed: {
-    opacity: 0.7,
+  logo: {
+    width: 32,
+    height: 32,
+    marginRight: 10,
   },
-  linkButton: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.five,
-    justifyContent: 'center',
-    gap: Spacing.one,
-    alignItems: 'center',
+  brandText: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 22,
+    color: "#111827",
+    letterSpacing: 0.1,
   },
-  sectionsWrapper: {
-    gap: Spacing.five,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
+  notificationBtn: {
+    width: 36,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  collapsibleContent: {
-    alignItems: 'center',
+  badge: {
+    position: "absolute",
+    top: 1,
+    right: 0,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: "#7047F8",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 4,
   },
-  imageTutorial: {
-    width: '100%',
-    aspectRatio: 296 / 171,
-    borderRadius: Spacing.three,
-    marginTop: Spacing.two,
+  badgeText: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 9,
+    color: "#FFFFFF",
   },
-  imageReact: {
-    width: 100,
-    height: 100,
-    alignSelf: 'center',
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: HORIZONTAL_PADDING,
+    marginTop: 10,
+    marginBottom: 16,
+  },
+  pageTitle: {
+    fontFamily: "Poppins_700Bold",
+    fontSize: 26,
+    color: "#111827",
+  },
+  searchButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+  },
+  listContent: {
+    paddingHorizontal: HORIZONTAL_PADDING,
+    gap: 12,
+  },
+  categoryCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
+    padding: 12,
+    shadowColor: "#111827",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  cardLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  iconGradient: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
+  },
+  textGroup: {
+    justifyContent: "center",
+  },
+  categoryName: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 15,
+    color: "#111827",
+    marginBottom: 2,
+  },
+  categoryCount: {
+    fontFamily: "Poppins_400Regular",
+    fontSize: 12,
+    color: "#6B7280",
   },
 });

@@ -1,9 +1,10 @@
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Image, type ImageProps } from "expo-image";
-import React from "react";
+import React, { useState } from "react";
 import {
   Dimensions,
+  Modal,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -86,8 +87,23 @@ const categories = [
 
 export default function SearchScreen() {
   const insets = useSafeAreaInsets();
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+
+  // Filter selection states
+  const [selectedCategory, setSelectedCategory] = useState("AI");
+  const [selectedTool, setSelectedTool] = useState<string | null>(null);
+  const [selectedMediaType, setSelectedMediaType] = useState("Image");
+  const [selectedSort, setSelectedSort] = useState("Latest");
+
   const leftColumn = searchPrompts.filter((_, index) => index % 2 === 0);
   const rightColumn = searchPrompts.filter((_, index) => index % 2 !== 0);
+
+  const resetFilters = () => {
+    setSelectedCategory("AI");
+    setSelectedTool(null);
+    setSelectedMediaType("Image");
+    setSelectedSort("Latest");
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -124,7 +140,11 @@ export default function SearchScreen() {
               style={styles.searchInput}
             />
           </View>
-          <TouchableOpacity style={styles.filterButton} activeOpacity={0.75}>
+          <TouchableOpacity
+            style={styles.filterButton}
+            activeOpacity={0.75}
+            onPress={() => setIsFilterVisible(true)}
+          >
             <Feather name="sliders" size={20} color="#374151" />
           </TouchableOpacity>
         </View>
@@ -177,6 +197,156 @@ export default function SearchScreen() {
             </View>
           </View>
         </ScrollView>
+
+        {/* Filter Modal */}
+        <Modal
+          visible={isFilterVisible}
+          animationType="slide"
+          presentationStyle="fullScreen"
+          onRequestClose={() => setIsFilterVisible(false)}
+        >
+          <SafeAreaView style={styles.modalSafeArea}>
+            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+            
+            {/* Modal Header */}
+            <View style={styles.modalHeader}>
+              <TouchableOpacity
+                style={styles.modalBackButton}
+                onPress={() => setIsFilterVisible(false)}
+                activeOpacity={0.75}
+              >
+                <Feather name="arrow-left" size={22} color="#111827" />
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>Filter</Text>
+              <TouchableOpacity onPress={resetFilters} activeOpacity={0.7} style={styles.resetButton}>
+                <Text style={styles.resetButtonText}>Reset</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.modalContent}>
+              
+              {/* Category Section */}
+              <View style={styles.sectionHeader}>
+                <View style={styles.sectionIconBg}>
+                  <Feather name="grid" size={16} color="#7047F8" />
+                </View>
+                <Text style={styles.sectionHeading}>Category</Text>
+              </View>
+              <View style={styles.filterOptionsRow}>
+                {["AI", "AI Image", "AI Video", "ChatGPT"].map((cat) => {
+                  const isActive = selectedCategory === cat;
+                  const icon = cat === "AI" ? "sparkles" : cat === "AI Image" ? "image" : cat === "AI Video" ? "play" : "message-square";
+                  return (
+                    <TouchableOpacity
+                      key={cat}
+                      style={[styles.filterChip, isActive && styles.activeFilterChip]}
+                      onPress={() => setSelectedCategory(cat)}
+                    >
+                      <Feather name={icon as any} size={15} color={isActive ? "#7047F8" : "#4B5563"} style={styles.filterChipIcon} />
+                      <Text style={[styles.filterChipText, isActive && styles.activeFilterChipText]}>{cat}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* AI Tool Section */}
+              <View style={styles.sectionHeader}>
+                <View style={styles.sectionIconBg}>
+                  <Feather name="briefcase" size={16} color="#7047F8" />
+                </View>
+                <Text style={styles.sectionHeading}>AI Tool</Text>
+              </View>
+              <View style={styles.filterOptionsGrid}>
+                {[
+                  { name: "Midjourney", icon: "boat-outline", type: "ionicons" },
+                  { name: "DALL·E", icon: "chat-processing-outline", type: "material" },
+                  { name: "Runway", icon: "infinite", type: "ionicons" },
+                  { name: "ChatGPT", icon: "chat-processing-outline", type: "material" },
+                ].map((tool) => {
+                  const isActive = selectedTool === tool.name;
+                  return (
+                    <TouchableOpacity
+                      key={tool.name}
+                      style={[styles.filterChip, isActive && styles.activeFilterChip]}
+                      onPress={() => setSelectedTool(isActive ? null : tool.name)}
+                    >
+                      {tool.type === "ionicons" ? (
+                        <Ionicons name={tool.icon as any} size={15} color={isActive ? "#7047F8" : "#4B5563"} style={styles.filterChipIcon} />
+                      ) : (
+                        <MaterialCommunityIcons name={tool.icon as any} size={15} color={isActive ? "#7047F8" : "#4B5563"} style={styles.filterChipIcon} />
+                      )}
+                      <Text style={[styles.filterChipText, isActive && styles.activeFilterChipText]}>{tool.name}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* Media Type Section */}
+              <View style={styles.sectionHeader}>
+                <View style={styles.sectionIconBg}>
+                  <Feather name="folder" size={16} color="#7047F8" />
+                </View>
+                <Text style={styles.sectionHeading}>Media Type</Text>
+              </View>
+              <View style={styles.filterOptionsRow}>
+                {[
+                  { name: "Image", icon: "image" },
+                  { name: "Video", icon: "play-circle" },
+                  { name: "Text", icon: "align-left" },
+                ].map((media) => {
+                  const isActive = selectedMediaType === media.name;
+                  return (
+                    <TouchableOpacity
+                      key={media.name}
+                      style={[styles.filterChip, isActive && styles.activeFilterChip]}
+                      onPress={() => setSelectedMediaType(media.name)}
+                    >
+                      <Feather name={media.icon as any} size={15} color={isActive ? "#7047F8" : "#4B5563"} style={styles.filterChipIcon} />
+                      <Text style={[styles.filterChipText, isActive && styles.activeFilterChipText]}>{media.name}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* Sort By Section */}
+              <View style={styles.sectionHeader}>
+                <View style={styles.sectionIconBg}>
+                  <MaterialCommunityIcons name="swap-vertical" size={16} color="#7047F8" />
+                </View>
+                <Text style={styles.sectionHeading}>Sort By</Text>
+              </View>
+              <View style={styles.filterOptionsGrid}>
+                {[
+                  { name: "Latest", icon: "clock" },
+                  { name: "Most Popular", icon: "flame" },
+                  { name: "Most Copied", icon: "copy" },
+                  { name: "Most Saved", icon: "bookmark" },
+                ].map((sort) => {
+                  const isActive = selectedSort === sort.name;
+                  return (
+                    <TouchableOpacity
+                      key={sort.name}
+                      style={[styles.filterChip, isActive && styles.activeFilterChip]}
+                      onPress={() => setSelectedSort(sort.name)}
+                    >
+                      <Feather name={sort.icon as any} size={15} color={isActive ? "#7047F8" : "#4B5563"} style={styles.filterChipIcon} />
+                      <Text style={[styles.filterChipText, isActive && styles.activeFilterChipText]}>{sort.name}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* Apply Filters Button */}
+              <TouchableOpacity
+                style={styles.applyButton}
+                activeOpacity={0.88}
+                onPress={() => setIsFilterVisible(false)}
+              >
+                <Text style={styles.applyButtonText}>Apply Filters</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </SafeAreaView>
+        </Modal>
       </View>
     </SafeAreaView>
   );
@@ -490,5 +660,117 @@ const styles = StyleSheet.create({
   },
   midjourneyToolText: {
     color: "#7047F8",
+  },
+
+  /* Modal Styles */
+  modalSafeArea: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  modalHeader: {
+    height: 64,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ECEEF4",
+  },
+  modalBackButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#E0E2EA",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalTitle: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 18,
+    color: "#111827",
+  },
+  resetButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  resetButtonText: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 15,
+    color: "#7047F8",
+  },
+  modalContent: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 40,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  sectionIconBg: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#F0EEFF",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  sectionHeading: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 16,
+    color: "#111827",
+  },
+  filterOptionsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 32,
+  },
+  filterOptionsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginBottom: 32,
+  },
+  filterChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 42,
+    paddingHorizontal: 16,
+    borderRadius: 21,
+    borderWidth: 1,
+    borderColor: "#E0E2EA",
+    backgroundColor: "#FFFFFF",
+  },
+  activeFilterChip: {
+    borderColor: "#7047F8",
+    backgroundColor: "#F5F3FF",
+  },
+  filterChipIcon: {
+    marginRight: 6,
+  },
+  filterChipText: {
+    fontFamily: "Poppins_500Medium",
+    fontSize: 13,
+    color: "#4B5563",
+  },
+  activeFilterChipText: {
+    color: "#7047F8",
+  },
+  applyButton: {
+    backgroundColor: "#7047F8",
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 16,
+  },
+  applyButtonText: {
+    fontFamily: "Poppins_600SemiBold",
+    color: "#FFFFFF",
+    fontSize: 16,
   },
 });
