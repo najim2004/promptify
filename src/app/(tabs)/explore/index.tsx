@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "@/hooks/use-theme";
 
 const HORIZONTAL_PADDING = 16;
 
@@ -85,14 +86,23 @@ const categoriesList = [
 export default function ExploreCategoriesScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const theme = useTheme();
+
+  const isDark = theme.background === "#000000";
+  const bgColor = isDark ? "#121214" : "#F8FAFC";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#F3F4F6";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const headerBg = isDark ? "#1E2022" : "#FFFFFF";
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: headerBg }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Brand Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: headerBg }]}>
           <View style={styles.brandArea}>
             <Image
               source={require("@/assets/promptify/logo.png")}
@@ -100,7 +110,7 @@ export default function ExploreCategoriesScreen() {
               contentFit="contain"
               cachePolicy="memory-disk"
             />
-            <Text style={styles.brandText}>Promptify</Text>
+            <Text style={[styles.brandText, { color: textColor }]}>PromptNest</Text>
           </View>
 
           <TouchableOpacity
@@ -108,7 +118,7 @@ export default function ExploreCategoriesScreen() {
             style={styles.notificationBtn}
             onPress={() => router.push("/notifications" as any)}
           >
-            <Feather name="bell" size={22} color="#111827" />
+            <Feather name="bell" size={22} color={textColor} />
             <View style={styles.badge}>
               <Text style={styles.badgeText}>3</Text>
             </View>
@@ -117,9 +127,18 @@ export default function ExploreCategoriesScreen() {
 
         {/* Categories Section Title */}
         <View style={styles.titleRow}>
-          <Text style={styles.pageTitle}>Categories</Text>
-          <TouchableOpacity style={styles.searchButton} activeOpacity={0.75}>
-            <Feather name="search" size={20} color="#374151" />
+          <Text style={[styles.pageTitle, { color: textColor }]}>Categories</Text>
+          <TouchableOpacity
+            style={[
+              styles.searchButton,
+              {
+                backgroundColor: cardBg,
+                borderColor: isDark ? "#2D3035" : "#E5E7EB",
+              },
+            ]}
+            activeOpacity={0.75}
+          >
+            <Feather name="search" size={20} color={isDark ? "#94A3B8" : "#374151"} />
           </TouchableOpacity>
         </View>
 
@@ -131,7 +150,7 @@ export default function ExploreCategoriesScreen() {
           {categoriesList.map((item) => (
             <TouchableOpacity
               key={item.id}
-              style={styles.categoryCard}
+              style={[styles.categoryCard, { backgroundColor: cardBg, borderColor }]}
               activeOpacity={0.8}
               onPress={() => router.push("/explore/category-details" as any)}
             >
@@ -150,12 +169,14 @@ export default function ExploreCategoriesScreen() {
                 </LinearGradient>
 
                 <View style={styles.textGroup}>
-                  <Text style={styles.categoryName}>{item.name}</Text>
-                  <Text style={styles.categoryCount}>{item.count}</Text>
+                  <Text style={[styles.categoryName, { color: textColor }]}>{item.name}</Text>
+                  <Text style={[styles.categoryCount, { color: textSecondaryColor }]}>
+                    {item.count}
+                  </Text>
                 </View>
               </View>
 
-              <Feather name="chevron-right" size={20} color="#9CA3AF" />
+              <Feather name="chevron-right" size={20} color={isDark ? "#4B5563" : "#9CA3AF"} />
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -167,11 +188,9 @@ export default function ExploreCategoriesScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
   header: {
     paddingHorizontal: HORIZONTAL_PADDING,
@@ -193,7 +212,6 @@ const styles = StyleSheet.create({
   brandText: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 22,
-    color: "#111827",
     letterSpacing: 0.1,
   },
   notificationBtn: {
@@ -230,17 +248,14 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontFamily: "Poppins_700Bold",
     fontSize: 26,
-    color: "#111827",
   },
   searchButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFFFFF",
   },
   listContent: {
     paddingHorizontal: HORIZONTAL_PADDING,
@@ -250,10 +265,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#F3F4F6",
     padding: 12,
     shadowColor: "#111827",
     shadowOffset: { width: 0, height: 2 },
@@ -279,12 +292,10 @@ const styles = StyleSheet.create({
   categoryName: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 15,
-    color: "#111827",
     marginBottom: 2,
   },
   categoryCount: {
     fontFamily: "Poppins_400Regular",
     fontSize: 12,
-    color: "#6B7280",
   },
 });

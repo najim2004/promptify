@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "@/hooks/use-theme";
 
 const { width } = Dimensions.get("window");
 
@@ -86,24 +87,34 @@ const filterChips = [
 export default function CategoryDetailsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const theme = useTheme();
+
+  const isDark = theme.background === "#000000";
+  const bgColor = isDark ? "#121214" : "#F8FAFC";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#E5E7EB";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const headerBg = isDark ? "#1E2022" : "#FFFFFF";
+
   const [activeFilter, setActiveFilter] = useState("Latest");
 
   const leftColumn = categoryPrompts.filter((_, index) => index % 2 === 0);
   const rightColumn = categoryPrompts.filter((_, index) => index % 2 !== 0);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: headerBg }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: headerBg }]}>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[styles.backButton, { borderColor, backgroundColor: cardBg }]}
             onPress={() => router.back()}
             activeOpacity={0.75}
           >
-            <Feather name="arrow-left" size={20} color="#111827" />
+            <Feather name="arrow-left" size={20} color={textColor} />
           </TouchableOpacity>
 
           <View style={styles.brandArea}>
@@ -113,7 +124,7 @@ export default function CategoryDetailsScreen() {
               contentFit="contain"
               cachePolicy="memory-disk"
             />
-            <Text style={styles.brandText}>Promptify</Text>
+            <Text style={[styles.brandText, { color: textColor }]}>PromptNest</Text>
           </View>
 
           <TouchableOpacity
@@ -121,7 +132,7 @@ export default function CategoryDetailsScreen() {
             style={styles.notificationBtn}
             onPress={() => router.push("/notifications" as any)}
           >
-            <Feather name="bell" size={22} color="#111827" />
+            <Feather name="bell" size={22} color={textColor} />
             <View style={styles.badge}>
               <Text style={styles.badgeText}>3</Text>
             </View>
@@ -140,11 +151,11 @@ export default function CategoryDetailsScreen() {
           </LinearGradient>
 
           <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerTitle}>AI Image</Text>
-            <Text style={styles.bannerDescription}>
+            <Text style={[styles.bannerTitle, { color: textColor }]}>AI Image</Text>
+            <Text style={[styles.bannerDescription, { color: textSecondaryColor }]}>
               Explore high-quality image generation prompts
             </Text>
-            <Text style={styles.bannerCount}>4.7K Prompts</Text>
+            <Text style={[styles.bannerCount, { color: textSecondaryColor }]}>4.7K Prompts</Text>
           </View>
         </View>
 
@@ -162,16 +173,24 @@ export default function CategoryDetailsScreen() {
                 <TouchableOpacity
                   key={item.label}
                   activeOpacity={0.8}
-                  style={[styles.chip, isActive && styles.activeChip]}
+                  style={[
+                    styles.chip,
+                    { backgroundColor: cardBg, borderColor },
+                    isActive && styles.activeChip
+                  ]}
                   onPress={() => setActiveFilter(item.label)}
                 >
                   <Feather
                     name={item.icon as any}
                     size={15}
-                    color={isActive ? "#FFFFFF" : "#1F2937"}
+                    color={isActive ? "#FFFFFF" : isDark ? "#94A3B8" : "#1F2937"}
                     style={styles.chipIcon}
                   />
-                  <Text style={[styles.chipText, isActive && styles.activeChipText]}>
+                  <Text style={[
+                    styles.chipText,
+                    { color: isDark ? "#94A3B8" : "#1F2937" },
+                    isActive && styles.activeChipText
+                  ]}>
                     {item.label}
                   </Text>
                 </TouchableOpacity>
@@ -205,18 +224,25 @@ export default function CategoryDetailsScreen() {
 }
 
 function PromptCardItem({ item }: { item: PromptCard }) {
+  const theme = useTheme();
+  const isDark = theme.background === "#000000";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#E5E7EB";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+
   const isText = item.type === "text";
   const isCode = item.type === "code";
 
   return (
-    <TouchableOpacity activeOpacity={0.86} style={styles.card}>
+    <TouchableOpacity activeOpacity={0.86} style={[styles.card, { backgroundColor: cardBg, borderColor }]}>
       {isText ? (
-        <View style={styles.textCardBody}>
+        <View style={[styles.textCardBody, { backgroundColor: isDark ? "#25262B" : "#FAF9FF" }]}>
           <View style={styles.smallPurpleIcon}>
             <MaterialCommunityIcons name="message-text" size={14} color="#FFFFFF" />
           </View>
 
-          <Text style={styles.textPromptTitle} numberOfLines={6}>
+          <Text style={[styles.textPromptTitle, { color: textColor }]} numberOfLines={6}>
             {item.title}
           </Text>
         </View>
@@ -253,7 +279,7 @@ function PromptCardItem({ item }: { item: PromptCard }) {
 
       <View style={styles.cardFooter}>
         {!isText && (
-          <Text style={styles.cardTitle} numberOfLines={2}>
+          <Text style={[styles.cardTitle, { color: textColor }]} numberOfLines={2}>
             {item.title}
           </Text>
         )}
@@ -267,7 +293,7 @@ function PromptCardItem({ item }: { item: PromptCard }) {
                 color={item.tool === "ChatGPT" ? "#20B486" : "#7047F8"}
               />
             ) : item.tool === "Runway" ? (
-              <Ionicons name="infinite" size={16} color="#111827" />
+              <Ionicons name="infinite" size={16} color={textColor} />
             ) : (
               <Ionicons name="boat-outline" size={16} color="#7047F8" />
             )}
@@ -282,7 +308,7 @@ function PromptCardItem({ item }: { item: PromptCard }) {
             </Text>
           </View>
 
-          <Feather name="bookmark" size={18} color="#4B5563" />
+          <Feather name="bookmark" size={18} color={textSecondaryColor} />
         </View>
       </View>
     </TouchableOpacity>

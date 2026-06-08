@@ -1,6 +1,7 @@
 import React from "react";
 import { Image } from "expo-image";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useTheme } from "@/hooks/use-theme";
 
 type BrandHeaderProps = {
   showLogo?: boolean;
@@ -13,8 +14,10 @@ export function BrandHeader({
   showLogo,
   showSkip,
   onSkip,
-  brandText = "Promptify",
+  brandText = "PromptNest",
 }: BrandHeaderProps) {
+  const theme = useTheme();
+
   return (
     <View style={styles.header}>
       {showLogo ? (
@@ -25,7 +28,7 @@ export function BrandHeader({
             contentFit="contain"
             cachePolicy="memory-disk"
           />
-          <Text style={styles.brandText}>{brandText}</Text>
+          <Text style={[styles.brandText, { color: theme.text }]}>{brandText}</Text>
         </View>
       ) : (
         <View />
@@ -33,7 +36,7 @@ export function BrandHeader({
 
       {showSkip && (
         <TouchableOpacity activeOpacity={0.7} onPress={onSkip}>
-          <Text style={styles.skipText}>Skip</Text>
+          <Text style={[styles.skipText, { color: theme.textSecondary }]}>Skip</Text>
         </TouchableOpacity>
       )}
     </View>

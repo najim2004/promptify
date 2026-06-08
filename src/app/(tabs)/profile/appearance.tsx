@@ -12,7 +12,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
 import { Feather } from "@expo/vector-icons";
-
+import { useTheme } from "@/hooks/use-theme";
 import { getThemeMode, setThemeMode } from "@/hooks/use-color-scheme";
 
 const { width } = Dimensions.get("window");
@@ -20,24 +20,33 @@ const { width } = Dimensions.get("window");
 export default function AppearanceScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
+
+  const isDark = theme.background === "#000000";
+  const bgColor = isDark ? "#121214" : "#F8FAFC";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#F1F5F9";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const headerBg = isDark ? "#1E2022" : "#FFFFFF";
 
   // Active theme state
   const [selectedTheme, setSelectedTheme] = useState<"light" | "dark" | "system">(getThemeMode());
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: headerBg }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Header with Back Button */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: headerBg }]}>
           <View style={styles.headerLeft}>
             <TouchableOpacity
               style={styles.backButton}
               onPress={() => router.back()}
               activeOpacity={0.75}
             >
-              <Feather name="arrow-left" size={22} color="#1E293B" />
+              <Feather name="arrow-left" size={22} color={textColor} />
             </TouchableOpacity>
 
             <View style={styles.brandArea}>
@@ -47,7 +56,7 @@ export default function AppearanceScreen() {
                 contentFit="contain"
                 cachePolicy="memory-disk"
               />
-              <Text style={styles.brandText}>PromptNest</Text>
+              <Text style={[styles.brandText, { color: textColor }]}>PromptNest</Text>
             </View>
           </View>
 
@@ -56,7 +65,7 @@ export default function AppearanceScreen() {
             style={styles.notificationBtn}
             onPress={() => router.push("/notifications" as any)}
           >
-            <Feather name="bell" size={22} color="#111827" />
+            <Feather name="bell" size={22} color={textColor} />
             <View style={styles.badge}>
               <Text style={styles.badgeText}>3</Text>
             </View>
@@ -68,16 +77,22 @@ export default function AppearanceScreen() {
           contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 84 }]}
         >
           {/* Page Title */}
-          <Text style={styles.pageTitle}>Appearance</Text>
-          <Text style={styles.pageSubtitle}>Customize the look and feel of PromptNest</Text>
+          <Text style={[styles.pageTitle, { color: textColor }]}>Appearance</Text>
+          <Text style={[styles.pageSubtitle, { color: textSecondaryColor }]}>
+            Customize the look and feel of PromptNest
+          </Text>
 
           {/* Section: Theme */}
-          <Text style={styles.sectionHeader}>THEME</Text>
+          <Text style={[styles.sectionHeader, { color: textSecondaryColor }]}>THEME</Text>
 
           {/* Light Theme Card */}
           <TouchableOpacity
             activeOpacity={0.9}
-            style={[styles.themeCard, selectedTheme === "light" && styles.themeCardActive]}
+            style={[
+              styles.themeCard,
+              { backgroundColor: cardBg, borderColor },
+              selectedTheme === "light" && styles.themeCardActive,
+            ]}
             onPress={() => setSelectedTheme("light")}
           >
             <View style={styles.themePreviewContainer}>
@@ -98,11 +113,19 @@ export default function AppearanceScreen() {
               </View>
             </View>
             <View style={styles.themeInfo}>
-              <Text style={styles.themeTitle}>Light</Text>
-              <Text style={styles.themeSubtitle}>Clean and bright interface</Text>
+              <Text style={[styles.themeTitle, { color: textColor }]}>Light</Text>
+              <Text style={[styles.themeSubtitle, { color: textSecondaryColor }]}>
+                Clean and bright interface
+              </Text>
             </View>
             <View style={styles.radioButton}>
-              <View style={[styles.radioOuter, selectedTheme === "light" && styles.radioOuterActive]}>
+              <View
+                style={[
+                  styles.radioOuter,
+                  { borderColor: isDark ? "#4B5563" : "#CBD5E1" },
+                  selectedTheme === "light" && styles.radioOuterActive,
+                ]}
+              >
                 {selectedTheme === "light" && <View style={styles.radioInner} />}
               </View>
             </View>
@@ -111,7 +134,11 @@ export default function AppearanceScreen() {
           {/* Dark Theme Card */}
           <TouchableOpacity
             activeOpacity={0.9}
-            style={[styles.themeCard, selectedTheme === "dark" && styles.themeCardActive]}
+            style={[
+              styles.themeCard,
+              { backgroundColor: cardBg, borderColor },
+              selectedTheme === "dark" && styles.themeCardActive,
+            ]}
             onPress={() => setSelectedTheme("dark")}
           >
             <View style={styles.themePreviewContainer}>
@@ -132,11 +159,19 @@ export default function AppearanceScreen() {
               </View>
             </View>
             <View style={styles.themeInfo}>
-              <Text style={styles.themeTitle}>Dark</Text>
-              <Text style={styles.themeSubtitle}>Easy on the eyes in low light</Text>
+              <Text style={[styles.themeTitle, { color: textColor }]}>Dark</Text>
+              <Text style={[styles.themeSubtitle, { color: textSecondaryColor }]}>
+                Easy on the eyes in low light
+              </Text>
             </View>
             <View style={styles.radioButton}>
-              <View style={[styles.radioOuter, selectedTheme === "dark" && styles.radioOuterActive]}>
+              <View
+                style={[
+                  styles.radioOuter,
+                  { borderColor: isDark ? "#4B5563" : "#CBD5E1" },
+                  selectedTheme === "dark" && styles.radioOuterActive,
+                ]}
+              >
                 {selectedTheme === "dark" && <View style={styles.radioInner} />}
               </View>
             </View>
@@ -145,7 +180,11 @@ export default function AppearanceScreen() {
           {/* System Default Theme Card */}
           <TouchableOpacity
             activeOpacity={0.9}
-            style={[styles.themeCard, selectedTheme === "system" && styles.themeCardActive]}
+            style={[
+              styles.themeCard,
+              { backgroundColor: cardBg, borderColor },
+              selectedTheme === "system" && styles.themeCardActive,
+            ]}
             onPress={() => setSelectedTheme("system")}
           >
             <View style={styles.themePreviewContainer}>
@@ -177,11 +216,19 @@ export default function AppearanceScreen() {
               </View>
             </View>
             <View style={styles.themeInfo}>
-              <Text style={styles.themeTitle}>System Default</Text>
-              <Text style={styles.themeSubtitle}>Matches your device settings</Text>
+              <Text style={[styles.themeTitle, { color: textColor }]}>System Default</Text>
+              <Text style={[styles.themeSubtitle, { color: textSecondaryColor }]}>
+                Matches your device settings
+              </Text>
             </View>
             <View style={styles.radioButton}>
-              <View style={[styles.radioOuter, selectedTheme === "system" && styles.radioOuterActive]}>
+              <View
+                style={[
+                  styles.radioOuter,
+                  { borderColor: isDark ? "#4B5563" : "#CBD5E1" },
+                  selectedTheme === "system" && styles.radioOuterActive,
+                ]}
+              >
                 {selectedTheme === "system" && <View style={styles.radioInner} />}
               </View>
             </View>
@@ -208,11 +255,9 @@ export default function AppearanceScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
   container: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
   },
   header: {
     paddingHorizontal: 16,
@@ -221,7 +266,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#FFFFFF",
   },
   headerLeft: {
     flexDirection: "row",
@@ -243,7 +287,6 @@ const styles = StyleSheet.create({
   brandText: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 22,
-    color: "#1E293B",
     letterSpacing: 0.1,
   },
   notificationBtn: {
@@ -276,28 +319,23 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontFamily: "Poppins_700Bold",
     fontSize: 28,
-    color: "#0F172A",
     marginBottom: 4,
   },
   pageSubtitle: {
     fontFamily: "Poppins_400Regular",
     fontSize: 14,
-    color: "#64748B",
     marginBottom: 24,
   },
   sectionHeader: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 12,
-    color: "#64748B",
     letterSpacing: 0.8,
     marginBottom: 10,
     marginLeft: 4,
   },
   themeCard: {
-    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     padding: 12,
     flexDirection: "row",
     alignItems: "center",
@@ -399,13 +437,11 @@ const styles = StyleSheet.create({
   themeTitle: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 15,
-    color: "#0F172A",
     marginBottom: 2,
   },
   themeSubtitle: {
     fontFamily: "Poppins_400Regular",
     fontSize: 12,
-    color: "#64748B",
   },
   radioButton: {
     paddingHorizontal: 8,
@@ -415,7 +451,6 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: 1.5,
-    borderColor: "#CBD5E1",
     alignItems: "center",
     justifyContent: "center",
   },

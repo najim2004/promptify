@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "@/hooks/use-theme";
 
 const { width } = Dimensions.get("window");
 
@@ -79,7 +80,16 @@ const savedPrompts: PromptCard[] = [
 export default function SavedScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const theme = useTheme();
   const [savedItems, setSavedItems] = React.useState<PromptCard[]>(savedPrompts);
+
+  const isDark = theme.background === "#000000";
+  const bgColor = isDark ? "#121214" : "#F8FAFC";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#E3E5EE";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const headerBg = isDark ? "#1E2022" : "#FFFFFF";
 
   const leftColumn = savedItems.filter((_, index) => index % 2 === 0);
   const rightColumn = savedItems.filter((_, index) => index % 2 !== 0);
@@ -90,12 +100,12 @@ export default function SavedScreen() {
 
   if (savedItems.length === 0) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: headerBg }]}>
+        <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: bgColor }]}>
           {/* Brand Header */}
-          <View style={styles.header}>
+          <View style={[styles.header, { backgroundColor: headerBg }]}>
             <View style={styles.brandArea}>
               <Image
                 source={require("@/assets/promptify/logo.png")}
@@ -103,7 +113,7 @@ export default function SavedScreen() {
                 contentFit="contain"
                 cachePolicy="memory-disk"
               />
-              <Text style={styles.brandText}>Promptify</Text>
+              <Text style={[styles.brandText, { color: textColor }]}>PromptNest</Text>
             </View>
 
             <TouchableOpacity
@@ -111,7 +121,7 @@ export default function SavedScreen() {
               style={styles.notificationBtn}
               onPress={() => router.push("/notifications" as any)}
             >
-              <Feather name="bell" size={22} color="#111827" />
+              <Feather name="bell" size={22} color={textColor} />
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>3</Text>
               </View>
@@ -119,7 +129,7 @@ export default function SavedScreen() {
           </View>
 
           {/* Empty State Body */}
-          <View style={styles.emptyContainer}>
+          <View style={[styles.emptyContainer, { backgroundColor: bgColor }]}>
             <Image
               source={require("@/assets/promptify/no_saved.png")}
               style={styles.emptyImage}
@@ -127,8 +137,8 @@ export default function SavedScreen() {
               cachePolicy="memory-disk"
             />
 
-            <Text style={styles.emptyTitle}>No Saved Prompts Yet</Text>
-            <Text style={styles.emptySubtitle}>
+            <Text style={[styles.emptyTitle, { color: textColor }]}>No Saved Prompts Yet</Text>
+            <Text style={[styles.emptySubtitle, { color: textSecondaryColor }]}>
               Save prompts you love to view them later.
             </Text>
 
@@ -149,12 +159,12 @@ export default function SavedScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: headerBg }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Brand Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: headerBg }]}>
           <View style={styles.brandArea}>
             <Image
               source={require("@/assets/promptify/logo.png")}
@@ -162,7 +172,7 @@ export default function SavedScreen() {
               contentFit="contain"
               cachePolicy="memory-disk"
             />
-            <Text style={styles.brandText}>Promptify</Text>
+            <Text style={[styles.brandText, { color: textColor }]}>PromptNest</Text>
           </View>
 
           <TouchableOpacity
@@ -170,7 +180,7 @@ export default function SavedScreen() {
             style={styles.notificationBtn}
             onPress={() => router.push("/notifications" as any)}
           >
-            <Feather name="bell" size={22} color="#111827" />
+            <Feather name="bell" size={22} color={textColor} />
             <View style={styles.badge}>
               <Text style={styles.badgeText}>3</Text>
             </View>
@@ -179,8 +189,10 @@ export default function SavedScreen() {
 
         {/* Title area */}
         <View style={styles.titleArea}>
-          <Text style={styles.pageTitle}>Saved Prompts</Text>
-          <Text style={styles.pageSubtitle}>Your saved prompts, ready when you are.</Text>
+          <Text style={[styles.pageTitle, { color: textColor }]}>Saved Prompts</Text>
+          <Text style={[styles.pageSubtitle, { color: textSecondaryColor }]}>
+            Your saved prompts, ready when you are.
+          </Text>
         </View>
 
         {/* Prompts Feed */}
@@ -210,16 +222,24 @@ export default function SavedScreen() {
 function PromptCardItem({ item, onRemove }: { item: PromptCard; onRemove: (id: string) => void }) {
   const isText = item.type === "text";
   const isCode = item.type === "code";
+  const theme = useTheme();
+
+  const isDark = theme.background === "#000000";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#E3E5EE";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const textBodyBg = isDark ? "#242629" : "#FAF9FF";
 
   return (
-    <TouchableOpacity activeOpacity={0.86} style={styles.card}>
+    <TouchableOpacity activeOpacity={0.86} style={[styles.card, { backgroundColor: cardBg, borderColor }]}>
       {isText ? (
-        <View style={styles.textCardBody}>
+        <View style={[styles.textCardBody, { backgroundColor: textBodyBg }]}>
           <View style={styles.smallPurpleIcon}>
             <MaterialCommunityIcons name="message-text" size={14} color="#FFFFFF" />
           </View>
 
-          <Text style={styles.textPromptTitle} numberOfLines={6}>
+          <Text style={[styles.textPromptTitle, { color: textColor }]} numberOfLines={6}>
             {item.title}
           </Text>
         </View>
@@ -256,7 +276,7 @@ function PromptCardItem({ item, onRemove }: { item: PromptCard; onRemove: (id: s
 
       <View style={styles.cardFooter}>
         {!isText && (
-          <Text style={styles.cardTitle} numberOfLines={2}>
+          <Text style={[styles.cardTitle, { color: textColor }]} numberOfLines={2}>
             {item.title}
           </Text>
         )}
@@ -270,7 +290,7 @@ function PromptCardItem({ item, onRemove }: { item: PromptCard; onRemove: (id: s
                 color={item.tool === "ChatGPT" ? "#20B486" : "#7047F8"}
               />
             ) : item.tool === "Runway" ? (
-              <Ionicons name="infinite" size={16} color="#111827" />
+              <Ionicons name="infinite" size={16} color={isDark ? "#FFFFFF" : "#111827"} />
             ) : (
               <Ionicons name="boat-outline" size={16} color="#7047F8" />
             )}
@@ -279,6 +299,7 @@ function PromptCardItem({ item, onRemove }: { item: PromptCard; onRemove: (id: s
               style={[
                 styles.toolName,
                 (item.tool === "Midjourney" || item.tool === "DALL·E") && styles.purpleToolText,
+                { color: isDark ? "#A78BFA" : "#7047F8" }
               ]}
             >
               {item.tool}
@@ -297,11 +318,9 @@ function PromptCardItem({ item, onRemove }: { item: PromptCard; onRemove: (id: s
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
   header: {
     paddingHorizontal: HORIZONTAL_PADDING,
@@ -323,7 +342,6 @@ const styles = StyleSheet.create({
   brandText: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 22,
-    color: "#111827",
     letterSpacing: 0.1,
   },
   notificationBtn: {
@@ -357,13 +375,11 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontFamily: "Poppins_700Bold",
     fontSize: 26,
-    color: "#111827",
     marginBottom: 4,
   },
   pageSubtitle: {
     fontFamily: "Poppins_400Regular",
     fontSize: 14,
-    color: "#6B7280",
   },
   feedContent: {
     paddingHorizontal: HORIZONTAL_PADDING,
@@ -378,10 +394,8 @@ const styles = StyleSheet.create({
   },
   card: {
     width: CARD_WIDTH,
-    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E3E5EE",
     marginBottom: 12,
     overflow: "hidden",
   },
@@ -427,7 +441,6 @@ const styles = StyleSheet.create({
     minHeight: 180,
     paddingHorizontal: 16,
     paddingTop: 16,
-    backgroundColor: "#FAF9FF",
   },
   smallPurpleIcon: {
     width: 26,
@@ -442,7 +455,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_600SemiBold",
     fontSize: 13,
     lineHeight: 18,
-    color: "#111827",
   },
   cardFooter: {
     paddingHorizontal: 12,
@@ -453,7 +465,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_600SemiBold",
     fontSize: 12,
     lineHeight: 17,
-    color: "#111827",
     marginBottom: 8,
   },
   toolRow: {
@@ -468,7 +479,6 @@ const styles = StyleSheet.create({
   toolName: {
     fontFamily: "Poppins_400Regular",
     fontSize: 11,
-    color: "#7047F8",
     marginLeft: 6,
   },
   purpleToolText: {
@@ -479,7 +489,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
-    backgroundColor: "#FFFFFF",
     marginTop: -40,
   },
   emptyImage: {
@@ -490,14 +499,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontFamily: "Poppins_700Bold",
     fontSize: 24,
-    color: "#0F172A",
     marginBottom: 10,
     textAlign: "center",
   },
   emptySubtitle: {
     fontFamily: "Poppins_400Regular",
     fontSize: 15,
-    color: "#64748B",
     textAlign: "center",
     lineHeight: 22,
     marginBottom: 32,

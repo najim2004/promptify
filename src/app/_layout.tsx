@@ -13,7 +13,8 @@ import { useFonts } from 'expo-font';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, useColorScheme, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 import PromptifySplash from '@/components/splash-screen';
 import OnboardingScreen from '@/components/onboarding';
@@ -70,7 +71,7 @@ export default function RootLayout() {
           onFinish={handleSplashFinish}
         />
       ) : (
-        <View style={styles.appShell}>
+        <View style={[styles.appShell, { backgroundColor: colorScheme === 'dark' ? '#000000' : '#ffffff' }]}>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="notifications" />
@@ -81,7 +82,7 @@ export default function RootLayout() {
             <Stack.Screen name="reset-password" />
           </Stack>
           {isOnboardingVisible && (
-            <View style={styles.overlay}>
+            <View style={[styles.overlay, { backgroundColor: colorScheme === 'dark' ? '#000000' : '#ffffff' }]}>
               <OnboardingScreen onFinish={handleOnboardingFinish} />
             </View>
           )}

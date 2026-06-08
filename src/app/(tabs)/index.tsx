@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "@/hooks/use-theme";
 
 const { width } = Dimensions.get("window");
 
@@ -26,7 +27,7 @@ type PromptCard = {
   id: string;
   type: PromptCardType;
   title: string;
-  tool: "Midjourney" | "Runway" | "ChatGPT";
+  tool: "Midjourney" | "Runway" | "ChatGPT" | "DALL·E";
   image?: ImageProps["source"];
   duration?: string;
 };
@@ -57,17 +58,16 @@ const homePrompts: PromptCard[] = [
   {
     id: "4",
     type: "image",
-    title: "Cozy cabin in the woods surrounded by mist and a flowing river",
-    tool: "Midjourney",
-    image: require("@/assets/promptify/cabin.png"),
+    title: "Minimal logo design for an AI productivity app",
+    tool: "DALL·E",
+    image: require("@/assets/promptify/logo_design.png"),
   },
   {
     id: "5",
-    type: "video",
-    title: "Cinematic portrait with neon lighting and bokeh",
-    tool: "Runway",
-    image: require("@/assets/promptify/portrait.png"),
-    duration: "0:06",
+    type: "image",
+    title: "SaaS landing page design for a productivity tool",
+    tool: "DALL·E",
+    image: require("@/assets/promptify/saas_design.png"),
   },
   {
     id: "6",
@@ -89,18 +89,27 @@ const categories = [
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const [showOfflineAlert, setShowOfflineAlert] = useState(true);
+  const theme = useTheme();
+  const [showOfflineAlert, setShowOfflineAlert] = useState(false);
+
+  const isDark = theme.background === "#000000";
+  const bgColor = isDark ? "#121214" : "#F8FAFC";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#E3E5EE";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const headerBg = isDark ? "#1E2022" : "#FFFFFF";
 
   const leftColumn = homePrompts.filter((_, index) => index % 2 === 0);
   const rightColumn = homePrompts.filter((_, index) => index % 2 !== 0);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: headerBg }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: headerBg }]}>
           <View style={styles.brandArea}>
             <Image
               source={require("@/assets/promptify/logo.png")}
@@ -108,7 +117,7 @@ export default function HomeScreen() {
               contentFit="contain"
               cachePolicy="memory-disk"
             />
-            <Text style={styles.brandText}>Promptify</Text>
+            <Text style={[styles.brandText, { color: textColor }]}>PromptNest</Text>
           </View>
 
           <TouchableOpacity
@@ -116,7 +125,7 @@ export default function HomeScreen() {
             style={styles.notificationBtn}
             onPress={() => router.push("/notifications" as any)}
           >
-            <Feather name="bell" size={22} color="#111827" />
+            <Feather name="bell" size={22} color={textColor} />
             <View style={styles.badge}>
               <Text style={styles.badgeText}>3</Text>
             </View>
@@ -127,44 +136,67 @@ export default function HomeScreen() {
           <NoInternetView onDismiss={() => setShowOfflineAlert(false)} />
         ) : (
           <>
-            <View style={styles.searchBox}>
-              <Feather name="search" size={20} color="#374151" />
+            <View
+              style={[
+                styles.searchBox,
+                {
+                  backgroundColor: cardBg,
+                  borderColor: isDark ? "#2D3035" : "#DCDDE6",
+                },
+              ]}
+            >
+              <Feather name="search" size={20} color={isDark ? "#94A3B8" : "#374151"} />
               <TextInput
                 placeholder="Search prompts, tools, or categories..."
-                placeholderTextColor="#606879"
-                style={styles.searchInput}
+                placeholderTextColor={isDark ? "#64748B" : "#606879"}
+                style={[styles.searchInput, { color: textColor }]}
               />
             </View>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.categoryRow}
-            >
-              {categories.map((item, index) => {
-                const isActive = index === 0;
+            <View style={{ height: 66 }}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.categoryRow}
+              >
+                {categories.map((item, index) => {
+                  const isActive = index === 0;
 
-                return (
-                  <TouchableOpacity
-                    key={item.label}
-                    activeOpacity={0.8}
-                    style={[styles.chip, isActive && styles.activeChip]}
-                  >
-                    {item.icon && (
-                      <Ionicons
-                        name={item.icon as any}
-                        size={16}
-                        color={isActive ? "#FFFFFF" : "#1F2937"}
-                        style={styles.chipIcon}
-                      />
-                    )}
-                    <Text style={[styles.chipText, isActive && styles.activeChipText]}>
-                      {item.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
+                  return (
+                    <TouchableOpacity
+                      key={item.label}
+                      activeOpacity={0.8}
+                      style={[
+                        styles.chip,
+                        {
+                          backgroundColor: isActive ? "#7047F8" : cardBg,
+                          borderColor: isActive ? "#7047F8" : borderColor,
+                        },
+                      ]}
+                    >
+                      {item.icon && (
+                        <Ionicons
+                          name={item.icon as any}
+                          size={16}
+                          color={isActive ? "#FFFFFF" : isDark ? "#94A3B8" : "#1F2937"}
+                          style={styles.chipIcon}
+                        />
+                      )}
+                      <Text
+                        style={[
+                          styles.chipText,
+                          {
+                            color: isActive ? "#FFFFFF" : isDark ? "#94A3B8" : "#1F2937",
+                          },
+                        ]}
+                      >
+                        {item.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
 
             <ScrollView
               showsVerticalScrollIndicator={false}
@@ -192,16 +224,22 @@ export default function HomeScreen() {
 }
 
 function NoInternetView({ onDismiss }: { onDismiss: () => void }) {
+  const theme = useTheme();
+  const isDark = theme.background === "#000000";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const bgColor = isDark ? "#121214" : "#FFFFFF";
+
   return (
-    <View style={styles.offlineContainer}>
+    <View style={[styles.offlineContainer, { backgroundColor: bgColor }]}>
       <Image
         source={require("@/assets/promptify/no_internet.png")}
         style={styles.offlineImage}
         contentFit="contain"
       />
       
-      <Text style={styles.offlineTitle}>No Internet Connection</Text>
-      <Text style={styles.offlineSubtitle}>
+      <Text style={[styles.offlineTitle, { color: textColor }]}>No Internet Connection</Text>
+      <Text style={[styles.offlineSubtitle, { color: textSecondaryColor }]}>
         Looks like you're offline. Check your connection and try again.
       </Text>
 
@@ -221,16 +259,27 @@ function NoInternetView({ onDismiss }: { onDismiss: () => void }) {
 function PromptCardItem({ item }: { item: PromptCard }) {
   const isText = item.type === "text";
   const isCode = item.type === "code";
+  const theme = useTheme();
+
+  const isDark = theme.background === "#000000";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#E3E5EE";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const textBodyBg = isDark ? "#242629" : "#FAF9FF";
 
   return (
-    <TouchableOpacity activeOpacity={0.86} style={styles.card}>
+    <TouchableOpacity
+      activeOpacity={0.86}
+      style={[styles.card, { backgroundColor: cardBg, borderColor }]}
+    >
       {isText ? (
-        <View style={styles.textCardBody}>
+        <View style={[styles.textCardBody, { backgroundColor: textBodyBg }]}>
           <View style={styles.smallPurpleIcon}>
             <MaterialCommunityIcons name="message-text" size={14} color="#FFFFFF" />
           </View>
 
-          <Text style={styles.textPromptTitle} numberOfLines={6}>
+          <Text style={[styles.textPromptTitle, { color: textColor }]} numberOfLines={6}>
             {item.title}
           </Text>
         </View>
@@ -267,7 +316,7 @@ function PromptCardItem({ item }: { item: PromptCard }) {
 
       <View style={styles.cardFooter}>
         {!isText && (
-          <Text style={styles.cardTitle} numberOfLines={2}>
+          <Text style={[styles.cardTitle, { color: textColor }]} numberOfLines={2}>
             {item.title}
           </Text>
         )}
@@ -277,17 +326,23 @@ function PromptCardItem({ item }: { item: PromptCard }) {
             {item.tool === "ChatGPT" ? (
               <MaterialCommunityIcons name="chat-processing" size={16} color="#20B486" />
             ) : item.tool === "Runway" ? (
-              <Ionicons name="infinite" size={16} color="#111827" />
+              <Ionicons name="infinite" size={16} color={isDark ? "#FFFFFF" : "#111827"} />
             ) : (
               <Ionicons name="boat-outline" size={16} color="#7047F8" />
             )}
 
-            <Text style={[styles.toolName, item.tool === "Midjourney" && styles.midjourneyToolText]}>
+            <Text
+              style={[
+                styles.toolName,
+                item.tool === "Midjourney" && styles.midjourneyToolText,
+                { color: isDark ? "#A78BFA" : "#7047F8" },
+              ]}
+            >
               {item.tool}
             </Text>
           </View>
 
-          <Feather name="bookmark" size={18} color="#4B5563" />
+          <Feather name="bookmark" size={18} color={isDark ? "#94A3B8" : "#4B5563"} />
         </View>
       </View>
     </TouchableOpacity>
@@ -297,11 +352,9 @@ function PromptCardItem({ item }: { item: PromptCard }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
   header: {
     paddingHorizontal: HORIZONTAL_PADDING,
@@ -323,7 +376,6 @@ const styles = StyleSheet.create({
   brandText: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 22,
-    color: "#111827",
     letterSpacing: 0.1,
   },
   notificationBtn: {
@@ -354,8 +406,6 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#DCDDE6",
-    backgroundColor: "#FFFFFF",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
@@ -365,7 +415,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontFamily: "Poppins_400Regular",
     fontSize: 14,
-    color: "#111827",
     paddingVertical: 0,
   },
   categoryRow: {
@@ -380,16 +429,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 19,
     borderWidth: 1,
-    borderColor: "#E0E2EA",
-    backgroundColor: "#FFFFFF",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
-  },
-  activeChip: {
-    backgroundColor: "#7047F8",
-    borderColor: "#7047F8",
   },
   chipIcon: {
     marginRight: 6,
@@ -397,10 +440,6 @@ const styles = StyleSheet.create({
   chipText: {
     fontFamily: "Poppins_500Medium",
     fontSize: 13,
-    color: "#1F2937",
-  },
-  activeChipText: {
-    color: "#FFFFFF",
   },
   feedContent: {
     paddingHorizontal: HORIZONTAL_PADDING,
@@ -415,10 +454,8 @@ const styles = StyleSheet.create({
   },
   card: {
     width: CARD_WIDTH,
-    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E3E5EE",
     marginBottom: 12,
     overflow: "hidden",
   },
@@ -464,7 +501,6 @@ const styles = StyleSheet.create({
     minHeight: 180,
     paddingHorizontal: 16,
     paddingTop: 16,
-    backgroundColor: "#FAF9FF",
   },
   smallPurpleIcon: {
     width: 26,
@@ -479,7 +515,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_600SemiBold",
     fontSize: 13,
     lineHeight: 18,
-    color: "#111827",
   },
   cardFooter: {
     paddingHorizontal: 12,
@@ -490,7 +525,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_600SemiBold",
     fontSize: 12,
     lineHeight: 17,
-    color: "#111827",
     marginBottom: 8,
   },
   toolRow: {
@@ -505,7 +539,6 @@ const styles = StyleSheet.create({
   toolName: {
     fontFamily: "Poppins_400Regular",
     fontSize: 11,
-    color: "#7047F8",
     marginLeft: 6,
   },
   midjourneyToolText: {
@@ -516,7 +549,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
-    backgroundColor: "#FFFFFF",
   },
   offlineImage: {
     width: 240,
@@ -526,14 +558,12 @@ const styles = StyleSheet.create({
   offlineTitle: {
     fontFamily: "Poppins_700Bold",
     fontSize: 22,
-    color: "#111827",
     marginBottom: 10,
     textAlign: "center",
   },
   offlineSubtitle: {
     fontFamily: "Poppins_400Regular",
     fontSize: 14,
-    color: "#6B7280",
     textAlign: "center",
     lineHeight: 20,
     marginBottom: 32,

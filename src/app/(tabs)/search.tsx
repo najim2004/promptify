@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "@/hooks/use-theme";
 
 const { width } = Dimensions.get("window");
 
@@ -88,6 +89,16 @@ const categories = [
 export default function SearchScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const theme = useTheme();
+
+  const isDark = theme.background === "#000000";
+  const bgColor = isDark ? "#121214" : "#F8FAFC";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#E3E5EE";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const headerBg = isDark ? "#1E2022" : "#FFFFFF";
+
   const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   // Filter selection states
@@ -107,12 +118,12 @@ export default function SearchScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: headerBg }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: headerBg }]}>
           <View style={styles.brandArea}>
             <Image
               source={require("@/assets/promptify/logo.png")}
@@ -120,7 +131,7 @@ export default function SearchScreen() {
               contentFit="contain"
               cachePolicy="memory-disk"
             />
-            <Text style={styles.brandText}>Promptify</Text>
+            <Text style={[styles.brandText, { color: textColor }]}>PromptNest</Text>
           </View>
 
           <TouchableOpacity
@@ -128,7 +139,7 @@ export default function SearchScreen() {
             style={styles.notificationBtn}
             onPress={() => router.push("/notifications" as any)}
           >
-            <Feather name="bell" size={22} color="#111827" />
+            <Feather name="bell" size={22} color={textColor} />
             <View style={styles.badge}>
               <Text style={styles.badgeText}>3</Text>
             </View>
@@ -136,53 +147,66 @@ export default function SearchScreen() {
         </View>
 
         <View style={styles.searchRow}>
-          <View style={styles.searchBoxCustom}>
-            <Feather name="search" size={20} color="#374151" />
+          <View style={[styles.searchBoxCustom, { backgroundColor: cardBg, borderColor }]}>
+            <Feather name="search" size={20} color={isDark ? "#94A3B8" : "#374151"} />
             <TextInput
               defaultValue="cyberpunk"
               placeholder="Search prompts, tools, or categories..."
-              placeholderTextColor="#606879"
-              style={styles.searchInput}
+              placeholderTextColor={isDark ? "#64748B" : "#606879"}
+              style={[styles.searchInput, { color: textColor }]}
             />
           </View>
           <TouchableOpacity
-            style={styles.filterButton}
+            style={[styles.filterButton, { backgroundColor: cardBg, borderColor }]}
             activeOpacity={0.75}
             onPress={() => setIsFilterVisible(true)}
           >
-            <Feather name="sliders" size={20} color="#374151" />
+            <Feather name="sliders" size={20} color={isDark ? "#94A3B8" : "#374151"} />
           </TouchableOpacity>
         </View>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoryRow}
-        >
-          {categories.map((item, index) => {
-            const isActive = index === 0;
+        <View style={{ height: 66 }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryRow}
+          >
+            {categories.map((item, index) => {
+              const isActive = index === 0;
 
-            return (
-              <TouchableOpacity
-                key={item.label}
-                activeOpacity={0.8}
-                style={[styles.chip, isActive && styles.activeChip]}
-              >
-                {item.icon && (
-                  <Ionicons
-                    name={item.icon as any}
-                    size={16}
-                    color={isActive ? "#FFFFFF" : "#1F2937"}
-                    style={styles.chipIcon}
-                  />
-                )}
-                <Text style={[styles.chipText, isActive && styles.activeChipText]}>
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+              return (
+                <TouchableOpacity
+                  key={item.label}
+                  activeOpacity={0.8}
+                  style={[
+                    styles.chip,
+                    {
+                      backgroundColor: isActive ? "#7047F8" : cardBg,
+                      borderColor: isActive ? "#7047F8" : borderColor,
+                    },
+                  ]}
+                >
+                  {item.icon && (
+                    <Ionicons
+                      name={item.icon as any}
+                      size={16}
+                      color={isActive ? "#FFFFFF" : isDark ? "#94A3B8" : "#1F2937"}
+                      style={styles.chipIcon}
+                    />
+                  )}
+                  <Text
+                    style={[
+                      styles.chipText,
+                      { color: isActive ? "#FFFFFF" : isDark ? "#94A3B8" : "#1F2937" },
+                    ]}
+                  >
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -360,16 +384,24 @@ export default function SearchScreen() {
 function PromptCardItem({ item }: { item: PromptCard }) {
   const isText = item.type === "text";
   const isCode = item.type === "code";
+  const theme = useTheme();
+
+  const isDark = theme.background === "#000000";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#E3E5EE";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const textBodyBg = isDark ? "#242629" : "#FAF9FF";
 
   return (
-    <TouchableOpacity activeOpacity={0.86} style={styles.card}>
+    <TouchableOpacity activeOpacity={0.86} style={[styles.card, { backgroundColor: cardBg, borderColor }]}>
       {isText ? (
-        <View style={styles.textCardBody}>
+        <View style={[styles.textCardBody, { backgroundColor: textBodyBg }]}>
           <View style={styles.smallPurpleIcon}>
             <MaterialCommunityIcons name="message-text" size={14} color="#FFFFFF" />
           </View>
 
-          <Text style={styles.textPromptTitle} numberOfLines={6}>
+          <Text style={[styles.textPromptTitle, { color: textColor }]} numberOfLines={6}>
             {item.title}
           </Text>
         </View>
@@ -406,7 +438,7 @@ function PromptCardItem({ item }: { item: PromptCard }) {
 
       <View style={styles.cardFooter}>
         {!isText && (
-          <Text style={styles.cardTitle} numberOfLines={2}>
+          <Text style={[styles.cardTitle, { color: textColor }]} numberOfLines={2}>
             {item.title}
           </Text>
         )}
@@ -416,17 +448,23 @@ function PromptCardItem({ item }: { item: PromptCard }) {
             {item.tool === "ChatGPT" ? (
               <MaterialCommunityIcons name="chat-processing" size={16} color="#20B486" />
             ) : item.tool === "Runway" ? (
-              <Ionicons name="infinite" size={16} color="#111827" />
+              <Ionicons name="infinite" size={16} color={isDark ? "#FFFFFF" : "#111827"} />
             ) : (
               <Ionicons name="boat-outline" size={16} color="#7047F8" />
             )}
 
-            <Text style={[styles.toolName, item.tool === "Midjourney" && styles.midjourneyToolText]}>
+            <Text
+              style={[
+                styles.toolName,
+                item.tool === "Midjourney" && styles.midjourneyToolText,
+                { color: isDark ? "#A78BFA" : "#7047F8" },
+              ]}
+            >
               {item.tool}
             </Text>
           </View>
 
-          <Feather name="bookmark" size={18} color="#4B5563" />
+          <Feather name="bookmark" size={18} color={isDark ? "#94A3B8" : "#4B5563"} />
         </View>
       </View>
     </TouchableOpacity>

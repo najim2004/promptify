@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "@/hooks/use-theme";
 
 const HORIZONTAL_PADDING = 16;
 
@@ -86,20 +87,29 @@ const notificationsList: NotificationItem[] = [
 export default function NotificationsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const theme = useTheme();
+
+  const isDark = theme.background === "#000000";
+  const bgColor = isDark ? "#121214" : "#F8FAFC";
+  const headerBg = isDark ? "#1E2022" : "#FFFFFF";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#E5E7EB";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: headerBg }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Brand Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: headerBg }]}>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[styles.backButton, { borderColor, backgroundColor: cardBg }]}
             onPress={() => router.back()}
             activeOpacity={0.75}
           >
-            <Feather name="arrow-left" size={20} color="#111827" />
+            <Feather name="arrow-left" size={20} color={textColor} />
           </TouchableOpacity>
 
           <View style={styles.brandArea}>
@@ -109,11 +119,11 @@ export default function NotificationsScreen() {
               contentFit="contain"
               cachePolicy="memory-disk"
             />
-            <Text style={styles.brandText}>Promptify</Text>
+            <Text style={[styles.brandText, { color: textColor }]}>PromptNest</Text>
           </View>
 
           <TouchableOpacity activeOpacity={0.75} style={styles.notificationBtn}>
-            <Feather name="bell" size={22} color="#111827" />
+            <Feather name="bell" size={22} color={textColor} />
             <View style={styles.badge}>
               <Text style={styles.badgeText}>3</Text>
             </View>
@@ -122,8 +132,8 @@ export default function NotificationsScreen() {
 
         {/* Title area */}
         <View style={styles.titleArea}>
-          <Text style={styles.pageTitle}>Notifications</Text>
-          <Text style={styles.pageSubtitle}>Stay updated with the latest from Promptify.</Text>
+          <Text style={[styles.pageTitle, { color: textColor }]}>Notifications</Text>
+          <Text style={[styles.pageSubtitle, { color: textSecondaryColor }]}>Stay updated with the latest from PromptNest.</Text>
         </View>
 
         {/* List of notifications */}
@@ -132,7 +142,7 @@ export default function NotificationsScreen() {
           contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 20 }]}
         >
           {notificationsList.map((item) => (
-            <View key={item.id} style={styles.notificationCard}>
+            <View key={item.id} style={[styles.notificationCard, { backgroundColor: cardBg, borderColor }]}>
               {/* Left Side Icon/Image */}
               {item.image ? (
                 <Image source={item.image} style={styles.cardImage} contentFit="cover" />
@@ -154,13 +164,13 @@ export default function NotificationsScreen() {
               {/* Right Side Content */}
               <View style={styles.cardRight}>
                 <View style={styles.cardHeaderRow}>
-                  <Text style={styles.cardTitle} numberOfLines={2}>
+                  <Text style={[styles.cardTitle, { color: textColor }]} numberOfLines={2}>
                     {item.title}
                   </Text>
-                  <Text style={styles.cardTime}>{item.time}</Text>
+                  <Text style={[styles.cardTime, { color: textSecondaryColor }]}>{item.time}</Text>
                 </View>
 
-                <Text style={styles.cardDescription}>{item.description}</Text>
+                <Text style={[styles.cardDescription, { color: textSecondaryColor }]}>{item.description}</Text>
 
                 {item.linkText && (
                   <TouchableOpacity activeOpacity={0.7} style={styles.linkButton}>

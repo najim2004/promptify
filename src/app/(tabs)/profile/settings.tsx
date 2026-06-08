@@ -12,12 +12,22 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
 import { Feather, Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/hooks/use-theme";
 
 const { width } = Dimensions.get("window");
 
 export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
+
+  const isDark = theme.background === "#000000";
+  const bgColor = isDark ? "#121214" : "#F8FAFC";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#F1F5F9";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const headerBg = isDark ? "#1E2022" : "#FFFFFF";
 
   // Switch states
   const [notifications, setNotifications] = useState(true);
@@ -25,19 +35,19 @@ export default function SettingsScreen() {
   const [reduceMotion, setReduceMotion] = useState(false);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: headerBg }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Header with Back Button */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: headerBg }]}>
           <View style={styles.headerLeft}>
             <TouchableOpacity
               style={styles.backButton}
               onPress={() => router.back()}
               activeOpacity={0.75}
             >
-              <Feather name="arrow-left" size={22} color="#1E293B" />
+              <Feather name="arrow-left" size={22} color={textColor} />
             </TouchableOpacity>
 
             <View style={styles.brandArea}>
@@ -47,7 +57,7 @@ export default function SettingsScreen() {
                 contentFit="contain"
                 cachePolicy="memory-disk"
               />
-              <Text style={styles.brandText}>PromptNest</Text>
+              <Text style={[styles.brandText, { color: textColor }]}>PromptNest</Text>
             </View>
           </View>
 
@@ -56,7 +66,7 @@ export default function SettingsScreen() {
             style={styles.notificationBtn}
             onPress={() => router.push("/notifications" as any)}
           >
-            <Feather name="bell" size={22} color="#111827" />
+            <Feather name="bell" size={22} color={textColor} />
             <View style={styles.badge}>
               <Text style={styles.badgeText}>3</Text>
             </View>
@@ -68,11 +78,11 @@ export default function SettingsScreen() {
           contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 84 }]}
         >
           {/* Page Title */}
-          <Text style={styles.pageTitle}>Settings</Text>
+          <Text style={[styles.pageTitle, { color: textColor }]}>Settings</Text>
 
           {/* Section 1: Preferences */}
-          <Text style={styles.sectionHeader}>PREFERENCES</Text>
-          <View style={styles.sectionCard}>
+          <Text style={[styles.sectionHeader, { color: textSecondaryColor }]}>PREFERENCES</Text>
+          <View style={[styles.sectionCard, { backgroundColor: cardBg, borderColor }]}>
             <SettingsItem
               icon={<Ionicons name="color-palette-outline" size={22} color="#7047F8" />}
               title="Appearance"
@@ -126,8 +136,8 @@ export default function SettingsScreen() {
           </View>
 
           {/* Section 2: Support & Legal */}
-          <Text style={styles.sectionHeader}>SUPPORT & LEGAL</Text>
-          <View style={styles.sectionCard}>
+          <Text style={[styles.sectionHeader, { color: textSecondaryColor }]}>SUPPORT & LEGAL</Text>
+          <View style={[styles.sectionCard, { backgroundColor: cardBg, borderColor }]}>
             <SettingsItem
               icon={<Ionicons name="shield-checkmark-outline" size={22} color="#7047F8" />}
               title="Privacy Policy"
@@ -156,7 +166,17 @@ export default function SettingsScreen() {
           </View>
 
           {/* Log Out Button */}
-          <TouchableOpacity activeOpacity={0.8} style={styles.logoutBtn} onPress={() => {}}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={[
+              styles.logoutBtn,
+              {
+                backgroundColor: isDark ? "#2A1820" : "#FAF9FF",
+                borderColor: isDark ? "#4A1A22" : "#EBE9FE",
+              },
+            ]}
+            onPress={() => {}}
+          >
             <Feather name="log-out" size={18} color="#7047F8" style={styles.logoutIcon} />
             <Text style={styles.logoutBtnText}>Log Out</Text>
           </TouchableOpacity>
@@ -168,11 +188,18 @@ export default function SettingsScreen() {
 
 // Custom Toggle Switch
 function ToggleSwitch({ value, onValueChange }: { value: boolean; onValueChange: () => void }) {
+  const theme = useTheme();
+  const isDark = theme.background === "#000000";
+
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onValueChange}
-      style={[styles.switchTrack, value ? styles.switchTrackOn : styles.switchTrackOff]}
+      style={[
+        styles.switchTrack,
+        value ? styles.switchTrackOn : styles.switchTrackOff,
+        !value && isDark && { backgroundColor: "#334155" },
+      ]}
     >
       <View style={[styles.switchThumb, value ? styles.switchThumbOn : styles.switchThumbOff]} />
     </TouchableOpacity>
@@ -200,18 +227,29 @@ function SettingsItem({
   rightControl,
 }: SettingsItemProps) {
   const Container = onPress ? TouchableOpacity : View;
+  const theme = useTheme();
+  const isDark = theme.background === "#000000";
+  const borderColor = isDark ? "#2D3035" : "#F1F5F9";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
 
   return (
     <Container
       activeOpacity={0.7}
-      style={[styles.itemContainer, isLast && styles.noBorder]}
+      style={[
+        styles.itemContainer,
+        { borderBottomColor: borderColor },
+        isLast && styles.noBorder,
+      ]}
       onPress={onPress}
     >
       <View style={styles.itemLeft}>
         <View style={styles.iconWrapper}>{icon}</View>
         <View style={styles.textWrapper}>
-          <Text style={styles.itemTitle}>{title}</Text>
-          {subtitle && <Text style={styles.itemSubtitle}>{subtitle}</Text>}
+          <Text style={[styles.itemTitle, { color: textColor }]}>{title}</Text>
+          {subtitle && (
+            <Text style={[styles.itemSubtitle, { color: textSecondaryColor }]}>{subtitle}</Text>
+          )}
         </View>
       </View>
 
@@ -219,8 +257,10 @@ function SettingsItem({
         rightControl
       ) : (
         <View style={styles.itemRight}>
-          {value && <Text style={styles.valueText}>{value}</Text>}
-          {onPress && <Feather name="chevron-right" size={18} color="#94A3B8" />}
+          {value && <Text style={[styles.valueText, { color: textSecondaryColor }]}>{value}</Text>}
+          {onPress && (
+            <Feather name="chevron-right" size={18} color={isDark ? "#4B5563" : "#94A3B8"} />
+          )}
         </View>
       )}
     </Container>
@@ -230,11 +270,9 @@ function SettingsItem({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
   container: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
   },
   header: {
     paddingHorizontal: 16,
@@ -243,7 +281,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#FFFFFF",
   },
   headerLeft: {
     flexDirection: "row",
@@ -265,7 +302,6 @@ const styles = StyleSheet.create({
   brandText: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 22,
-    color: "#1E293B",
     letterSpacing: 0.1,
   },
   notificationBtn: {
@@ -298,22 +334,18 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontFamily: "Poppins_700Bold",
     fontSize: 28,
-    color: "#0F172A",
     marginBottom: 24,
   },
   sectionHeader: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 12,
-    color: "#64748B",
     letterSpacing: 0.8,
     marginBottom: 8,
     marginLeft: 4,
   },
   sectionCard: {
-    backgroundColor: "#FFFFFF",
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: "#F1F5F9",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
@@ -329,7 +361,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
   },
   noBorder: {
     borderBottomWidth: 0,
@@ -351,12 +382,10 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 15,
-    color: "#0F172A",
   },
   itemSubtitle: {
     fontFamily: "Poppins_400Regular",
     fontSize: 12,
-    color: "#64748B",
     marginTop: 2,
   },
   itemRight: {
@@ -366,13 +395,9 @@ const styles = StyleSheet.create({
   valueText: {
     fontFamily: "Poppins_500Medium",
     fontSize: 14,
-    color: "#64748B",
     marginRight: 8,
   },
   logoutBtn: {
-    backgroundColor: "#FAF9FF",
-    borderWidth: 1,
-    borderColor: "#EBE9FE",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -385,6 +410,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 1,
     marginTop: 8,
+    borderWidth: 1,
   },
   logoutIcon: {
     marginRight: 8,

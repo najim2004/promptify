@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "@/hooks/use-theme";
 import { BrandHeader } from "./brand-header";
 import { DotIndicator } from "./dot-indicator";
 import { GradientButton } from "./gradient-button";
@@ -92,9 +93,12 @@ export default function OnboardingScreen({ onFinish }: Props) {
     setActiveIndex(index);
   };
 
+  const theme = useTheme();
+  const isDark = theme.background === "#000000";
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
 
       <FlatList
         ref={flatListRef}
@@ -106,7 +110,7 @@ export default function OnboardingScreen({ onFinish }: Props) {
         bounces={false}
         onMomentumScrollEnd={handleScrollEnd}
         renderItem={({ item, index }) => (
-          <View style={styles.slide}>
+          <View style={[styles.slide, { backgroundColor: theme.background }]}>
             <BrandHeader
               showLogo={item.showLogo}
               showSkip={item.showSkip}
@@ -130,8 +134,8 @@ export default function OnboardingScreen({ onFinish }: Props) {
             </View>
 
             <View style={styles.textContent}>
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.description}>{item.description}</Text>
+              <Text style={[styles.title, { color: theme.text }]}>{item.title}</Text>
+              <Text style={[styles.description, { color: theme.textSecondary }]}>{item.description}</Text>
             </View>
 
             <View style={styles.bottomArea}>

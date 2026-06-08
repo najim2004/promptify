@@ -1,12 +1,17 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
+import { useTheme } from "@/hooks/use-theme";
+
 type DotIndicatorProps = {
   count: number;
   activeIndex: number;
 };
 
 export function DotIndicator({ count, activeIndex }: DotIndicatorProps) {
+  const theme = useTheme();
+  const isDark = theme.background === "#000000";
+
   return (
     <View style={styles.dots}>
       {Array.from({ length: count }).map((_, dotIndex) => (
@@ -14,6 +19,7 @@ export function DotIndicator({ count, activeIndex }: DotIndicatorProps) {
           key={dotIndex}
           style={[
             styles.dot,
+            { backgroundColor: isDark ? "#3D4148" : "#DADDE8" },
             activeIndex === dotIndex && styles.activeDot,
           ]}
         />

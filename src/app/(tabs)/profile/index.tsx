@@ -12,20 +12,30 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
 import { Feather } from "@expo/vector-icons";
+import { useTheme } from "@/hooks/use-theme";
 
 const { width } = Dimensions.get("window");
 
 export default function ProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
+
+  const isDark = theme.background === "#000000";
+  const bgColor = isDark ? "#121214" : "#F8FAFC";
+  const cardBg = isDark ? "#1E2022" : "#FFFFFF";
+  const borderColor = isDark ? "#2D3035" : "#F1F5F9";
+  const textColor = theme.text;
+  const textSecondaryColor = theme.textSecondary;
+  const headerBg = isDark ? "#1E2022" : "#FFFFFF";
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: headerBg }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Brand Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: headerBg }]}>
           <View style={styles.brandArea}>
             <Image
               source={require("@/assets/promptify/logo.png")}
@@ -33,7 +43,7 @@ export default function ProfileScreen() {
               contentFit="contain"
               cachePolicy="memory-disk"
             />
-            <Text style={styles.brandText}>PromptNest</Text>
+            <Text style={[styles.brandText, { color: textColor }]}>PromptNest</Text>
           </View>
 
           <TouchableOpacity
@@ -41,7 +51,7 @@ export default function ProfileScreen() {
             style={styles.notificationBtn}
             onPress={() => router.push("/notifications" as any)}
           >
-            <Feather name="bell" size={22} color="#111827" />
+            <Feather name="bell" size={22} color={textColor} />
             <View style={styles.badge}>
               <Text style={styles.badgeText}>3</Text>
             </View>
@@ -53,7 +63,7 @@ export default function ProfileScreen() {
           contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 84 }]}
         >
           {/* User Profile Card */}
-          <View style={styles.profileCard}>
+          <View style={[styles.profileCard, { backgroundColor: cardBg, borderColor }]}>
             <View style={styles.profileHeader}>
               <TouchableOpacity
                 activeOpacity={0.8}
@@ -67,46 +77,56 @@ export default function ProfileScreen() {
                 />
               </TouchableOpacity>
               <View style={styles.profileInfo}>
-                <Text style={styles.userName}>Ava Morgan</Text>
-                <Text style={styles.userEmail}>ava.morgan@example.com</Text>
+                <Text style={[styles.userName, { color: textColor }]}>Ava Morgan</Text>
+                <Text style={[styles.userEmail, { color: textSecondaryColor }]}>
+                  ava.morgan@example.com
+                </Text>
                 
-                <View style={styles.badgeContainer}>
+                <View
+                  style={[
+                    styles.badgeContainer,
+                    {
+                      backgroundColor: isDark ? "#2A2050" : "#FAF9FF",
+                      borderColor: isDark ? "#4C2B90" : "#EBE9FE",
+                    },
+                  ]}
+                >
                   <Feather name="star" size={12} color="#7047F8" style={styles.badgeIcon} />
                   <Text style={styles.badgeTextLabel}>Prompt Explorer</Text>
                 </View>
               </View>
             </View>
 
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: borderColor }]} />
 
             {/* Stats Row */}
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
                 <Feather name="bookmark" size={20} color="#7047F8" />
-                <Text style={styles.statNumber}>128</Text>
-                <Text style={styles.statLabel}>Saved</Text>
+                <Text style={[styles.statNumber, { color: textColor }]}>128</Text>
+                <Text style={[styles.statLabel, { color: textSecondaryColor }]}>Saved</Text>
               </View>
               
-              <View style={styles.verticalDivider} />
+              <View style={[styles.verticalDivider, { backgroundColor: borderColor }]} />
 
               <View style={styles.statItem}>
                 <Feather name="copy" size={20} color="#10B981" />
-                <Text style={styles.statNumber}>342</Text>
-                <Text style={styles.statLabel}>Copied</Text>
+                <Text style={[styles.statNumber, { color: textColor }]}>342</Text>
+                <Text style={[styles.statLabel, { color: textSecondaryColor }]}>Copied</Text>
               </View>
 
-              <View style={styles.verticalDivider} />
+              <View style={[styles.verticalDivider, { backgroundColor: borderColor }]} />
 
               <View style={styles.statItem}>
                 <Feather name="eye" size={20} color="#3B82F6" />
-                <Text style={styles.statNumber}>12.6K</Text>
-                <Text style={styles.statLabel}>Views</Text>
+                <Text style={[styles.statNumber, { color: textColor }]}>12.6K</Text>
+                <Text style={[styles.statLabel, { color: textSecondaryColor }]}>Views</Text>
               </View>
             </View>
           </View>
 
           {/* Menu Sections Container */}
-          <View style={styles.menuContainer}>
+          <View style={[styles.menuContainer, { backgroundColor: cardBg, borderColor }]}>
             <MenuItem
               icon={<Feather name="user" size={20} color="#7047F8" />}
               iconBg="#EEF2FF"
@@ -158,7 +178,7 @@ export default function ProfileScreen() {
           </View>
 
           {/* Separate Log Out Card */}
-          <View style={styles.logoutContainer}>
+          <View style={[styles.logoutContainer, { backgroundColor: cardBg, borderColor }]}>
             <MenuItem
               icon={<Feather name="log-out" size={18} color="#EF4444" />}
               iconBg="#FEF2F2"
@@ -186,22 +206,28 @@ interface MenuItemProps {
 }
 
 function MenuItem({ icon, iconBg, title, subtitle, onPress, isDestructive = false, isLast = false }: MenuItemProps) {
+  const theme = useTheme();
+  const isDark = theme.background === "#000000";
+  const borderColor = isDark ? "#2D3035" : "#F1F5F9";
+  const textColor = isDestructive ? "#EF4444" : theme.text;
+  const textSecondaryColor = theme.textSecondary;
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      style={[styles.menuItem, isLast && styles.noBorder]}
+      style={[styles.menuItem, { borderBottomColor: borderColor }, isLast && styles.noBorder]}
       onPress={onPress}
     >
       <View style={styles.menuItemLeft}>
-        <View style={[styles.menuIconWrapper, { backgroundColor: iconBg }]}>
+        <View style={[styles.menuIconWrapper, { backgroundColor: isDark ? "#2D3035" : iconBg }]}>
           {icon}
         </View>
         <View style={styles.menuTextWrapper}>
-          <Text style={[styles.menuTitle, isDestructive && styles.destructiveText]}>{title}</Text>
-          <Text style={styles.menuSubtitle}>{subtitle}</Text>
+          <Text style={[styles.menuTitle, { color: textColor }]}>{title}</Text>
+          <Text style={[styles.menuSubtitle, { color: textSecondaryColor }]}>{subtitle}</Text>
         </View>
       </View>
-      <Feather name="chevron-right" size={20} color="#9CA3AF" />
+      <Feather name="chevron-right" size={20} color={isDark ? "#4B5563" : "#9CA3AF"} />
     </TouchableOpacity>
   );
 }
@@ -209,11 +235,9 @@ function MenuItem({ icon, iconBg, title, subtitle, onPress, isDestructive = fals
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
   container: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
   },
   header: {
     paddingHorizontal: 16,
@@ -222,7 +246,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#FFFFFF",
   },
   brandArea: {
     flexDirection: "row",
@@ -236,7 +259,6 @@ const styles = StyleSheet.create({
   brandText: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 22,
-    color: "#1E293B",
     letterSpacing: 0.1,
   },
   notificationBtn: {
@@ -266,11 +288,9 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   profileCard: {
-    backgroundColor: "#FFFFFF",
     borderRadius: 24,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#F1F5F9",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
@@ -295,21 +315,17 @@ const styles = StyleSheet.create({
   userName: {
     fontFamily: "Poppins_700Bold",
     fontSize: 22,
-    color: "#0F172A",
     marginBottom: 2,
   },
   userEmail: {
     fontFamily: "Poppins_400Regular",
     fontSize: 13,
-    color: "#64748B",
     marginBottom: 8,
   },
   badgeContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FAF9FF",
     borderWidth: 1,
-    borderColor: "#EBE9FE",
     alignSelf: "flex-start",
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -325,7 +341,6 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: "#F1F5F9",
     marginVertical: 18,
   },
   statsRow: {
@@ -340,25 +355,20 @@ const styles = StyleSheet.create({
   statNumber: {
     fontFamily: "Poppins_700Bold",
     fontSize: 18,
-    color: "#0F172A",
     marginTop: 6,
     marginBottom: 2,
   },
   statLabel: {
     fontFamily: "Poppins_500Medium",
     fontSize: 12,
-    color: "#64748B",
   },
   verticalDivider: {
     width: 1,
     height: 36,
-    backgroundColor: "#F1F5F9",
   },
   menuContainer: {
-    backgroundColor: "#FFFFFF",
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: "#F1F5F9",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
@@ -368,10 +378,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   logoutContainer: {
-    backgroundColor: "#FFFFFF",
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: "#F1F5F9",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
@@ -386,7 +394,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
   },
   noBorder: {
     borderBottomWidth: 0,
@@ -410,15 +417,10 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 15,
-    color: "#0F172A",
     marginBottom: 2,
-  },
-  destructiveText: {
-    color: "#EF4444",
   },
   menuSubtitle: {
     fontFamily: "Poppins_400Regular",
     fontSize: 12,
-    color: "#64748B",
   },
 });

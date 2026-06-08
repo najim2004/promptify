@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '@/hooks/use-theme';
 
 const COLORS = {
   background: '#FFFFFF',
@@ -52,16 +53,23 @@ type GradientButtonProps = {
 type AuthIllustrationVariant = 'forgot' | 'verify' | 'reset';
 
 function AuthScaffold({ children, compact = false }: AuthScaffoldProps) {
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={theme.background} />
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[styles.scrollContent, compact && styles.compactScrollContent]}>
+          contentContainerStyle={[
+            styles.scrollContent,
+            { backgroundColor: theme.background },
+            compact && styles.compactScrollContent,
+          ]}>
           <View style={styles.content}>{children}</View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -70,6 +78,7 @@ function AuthScaffold({ children, compact = false }: AuthScaffoldProps) {
 }
 
 function BrandHeader({ centered = false }: { centered?: boolean }) {
+  const theme = useTheme();
   return (
     <View style={[styles.brandRow, centered && styles.centerBrand]}>
       <Image
@@ -78,7 +87,7 @@ function BrandHeader({ centered = false }: { centered?: boolean }) {
         contentFit="contain"
         cachePolicy="memory-disk"
       />
-      <Text style={styles.brandText}>Promptify</Text>
+      <Text style={[styles.brandText, { color: theme.text }]}>PromptNest</Text>
     </View>
   );
 }
@@ -93,18 +102,23 @@ function AuthInput({
   textContentType,
 }: AuthInputProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
+  const border = isDark ? '#2D3035' : '#DCDDE6';
+  const inputBg = isDark ? '#1E2022' : '#FFFFFF';
+  const mutedSoft = isDark ? '#8F949F' : '#7B8496';
 
   return (
-    <View style={styles.inputBox}>
-      <Feather name={icon} size={21} color="#657085" />
+    <View style={[styles.inputBox, { borderColor: border, backgroundColor: inputBg }]}>
+      <Feather name={icon} size={21} color={isDark ? '#8F949F' : '#657085'} />
       <TextInput
         autoCapitalize={autoCapitalize}
         autoComplete={autoComplete}
         keyboardType={keyboardType}
         placeholder={placeholder}
-        placeholderTextColor={COLORS.mutedSoft}
+        placeholderTextColor={mutedSoft}
         secureTextEntry={secure && !isVisible}
-        style={styles.input}
+        style={[styles.input, { color: theme.text }]}
         textContentType={textContentType}
       />
 
@@ -114,7 +128,7 @@ function AuthInput({
           activeOpacity={0.7}
           onPress={() => setIsVisible((value) => !value)}
           style={styles.passwordToggle}>
-          <Feather name={isVisible ? 'eye-off' : 'eye'} size={21} color={COLORS.mutedSoft} />
+          <Feather name={isVisible ? 'eye-off' : 'eye'} size={21} color={mutedSoft} />
         </TouchableOpacity>
       )}
     </View>
@@ -122,10 +136,13 @@ function AuthInput({
 }
 
 function GradientButton({ icon, onPress, title }: GradientButtonProps) {
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
+  const primaryDark = isDark ? '#5F32F4' : COLORS.primaryDark;
   return (
     <TouchableOpacity activeOpacity={0.88} onPress={onPress} style={styles.primaryButtonShadow}>
       <LinearGradient
-        colors={[COLORS.primary, '#6537F6', COLORS.primaryDark]}
+        colors={[COLORS.primary, '#6537F6', primaryDark]}
         start={{ x: 0, y: 0.5 }}
         end={{ x: 1, y: 0.5 }}
         style={styles.primaryButton}>
@@ -137,11 +154,15 @@ function GradientButton({ icon, onPress, title }: GradientButtonProps) {
 }
 
 function AuthDivider() {
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
+  const dividerLineColor = isDark ? '#2D3035' : '#D9DCE5';
+  const dividerTextColor = isDark ? '#8F949F' : '#4F586A';
   return (
     <View style={styles.dividerRow}>
-      <View style={styles.dividerLine} />
-      <Text style={styles.dividerText}>or continue with</Text>
-      <View style={styles.dividerLine} />
+      <View style={[styles.dividerLine, { backgroundColor: dividerLineColor }]} />
+      <Text style={[styles.dividerText, { color: dividerTextColor }]}>or continue with</Text>
+      <View style={[styles.dividerLine, { backgroundColor: dividerLineColor }]} />
     </View>
   );
 }
@@ -155,17 +176,26 @@ function SocialButton({
   onPress?: () => void;
   provider: 'Google' | 'Apple';
 }) {
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
+  const border = isDark ? '#2D3035' : '#DCDDE6';
+  const buttonBg = isDark ? '#1E2022' : '#FFFFFF';
+  const textColor = theme.text;
   return (
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={onPress}
-      style={[styles.socialButton, compact && styles.compactSocial]}>
+      style={[
+        styles.socialButton,
+        { borderColor: border, backgroundColor: buttonBg },
+        compact && styles.compactSocial,
+      ]}>
       <FontAwesome
         name={provider === 'Google' ? 'google' : 'apple'}
         size={20}
-        color={provider === 'Google' ? '#DB4437' : COLORS.text}
+        color={provider === 'Google' ? '#DB4437' : textColor}
       />
-      <Text style={styles.socialText}>{compact ? provider : `Continue with ${provider}`}</Text>
+      <Text style={[styles.socialText, { color: textColor }]}>{compact ? provider : `Continue with ${provider}`}</Text>
     </TouchableOpacity>
   );
 }
@@ -179,17 +209,23 @@ function AuthFooter({
   label: string;
   onPress?: () => void;
 }) {
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
+  const textColor = isDark ? '#8F949F' : '#4F586A';
+  const linkColor = isDark ? '#8F67FF' : '#4F22F4';
   return (
     <View style={styles.bottomTextRow}>
-      <Text style={styles.bottomText}>{label} </Text>
+      <Text style={[styles.bottomText, { color: textColor }]}>{label} </Text>
       <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
-        <Text style={styles.bottomLink}>{actionLabel}</Text>
+        <Text style={[styles.bottomLink, { color: linkColor }]}>{actionLabel}</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 function AuthIllustration({ variant }: { variant: AuthIllustrationVariant }) {
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
   const config = {
     forgot: {
       icon: 'key-outline' as const,
@@ -211,31 +247,39 @@ function AuthIllustration({ variant }: { variant: AuthIllustrationVariant }) {
     },
   }[variant];
 
+  const cardBgColors = isDark ? (['#1E1A33', '#121214'] as const) : (['#F6F3FF', '#FFFFFF'] as const);
+  const cardBorder = isDark ? '#2D2845' : '#E7E2FF';
+  const iconBg = isDark ? '#25213B' : '#FFFFFF';
+  const pillBg = isDark ? '#25213B' : '#FFFFFF';
+  const lineLargeBg = isDark ? '#3D355C' : '#E5E0F8';
+  const lineSmallBg = isDark ? '#332B50' : '#F0ECFF';
+  const detailColor = isDark ? '#A0A7B6' : '#455064';
+
   return (
     <View style={styles.illustrationWrap}>
       <LinearGradient
-        colors={['#F6F3FF', '#FFFFFF']}
+        colors={cardBgColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.illustrationCard}>
+        style={[styles.illustrationCard, { borderColor: cardBorder }]}>
         <View style={styles.illustrationHeader}>
-          <View style={styles.illustrationIcon}>
-            <Ionicons name={config.icon} size={30} color={COLORS.primaryDark} />
+          <View style={[styles.illustrationIcon, { backgroundColor: iconBg }]}>
+            <Ionicons name={config.icon} size={30} color={isDark ? '#8F67FF' : '#4F22F4'} />
           </View>
-          <View style={styles.illustrationPill}>
-            <Text style={styles.illustrationPillText}>{config.pill}</Text>
+          <View style={[styles.illustrationPill, { backgroundColor: pillBg }]}>
+            <Text style={[styles.illustrationPillText, { color: isDark ? '#8F67FF' : '#4F22F4' }]}>{config.pill}</Text>
           </View>
         </View>
 
-        <Text style={styles.illustrationTitle}>{config.title}</Text>
-        <View style={styles.illustrationLineLarge} />
-        <View style={styles.illustrationLineSmall} />
+        <Text style={[styles.illustrationTitle, { color: theme.text }]}>{config.title}</Text>
+        <View style={[styles.illustrationLineLarge, { backgroundColor: lineLargeBg }]} />
+        <View style={[styles.illustrationLineSmall, { backgroundColor: lineSmallBg }]} />
 
         <View style={styles.illustrationFooter}>
           <View style={styles.statusIcon}>
-            <Feather name="check" size={14} color={COLORS.white} />
+            <Feather name="check" size={14} color="#FFFFFF" />
           </View>
-          <Text style={styles.illustrationDetail}>{config.detail}</Text>
+          <Text style={[styles.illustrationDetail, { color: detailColor }]}>{config.detail}</Text>
         </View>
       </LinearGradient>
     </View>
@@ -251,13 +295,16 @@ export function SignInScreen({
   onSignIn?: () => void;
   onSignUp?: () => void;
 }) {
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
+
   return (
     <AuthScaffold>
       <View style={styles.signInTopSpacing} />
       <BrandHeader />
 
-      <Text style={styles.largeTitle}>Welcome Back</Text>
-      <Text style={styles.subtitle}>
+      <Text style={[styles.largeTitle, { color: theme.text }]}>Welcome Back</Text>
+      <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
         Sign in to access your prompts, categories, and AI tools in one place.
       </Text>
 
@@ -278,7 +325,7 @@ export function SignInScreen({
         />
 
         <TouchableOpacity activeOpacity={0.7} onPress={onForgotPassword}>
-          <Text style={styles.forgotText}>Forgot password?</Text>
+          <Text style={[styles.forgotText, { color: isDark ? '#8F67FF' : '#4F22F4' }]}>Forgot password?</Text>
         </TouchableOpacity>
       </View>
 
@@ -304,15 +351,17 @@ export function SignUpScreen({
   onSignIn?: () => void;
 }) {
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
 
   return (
     <AuthScaffold>
       <View style={styles.signUpTopSpacing} />
       <BrandHeader />
 
-      <Text style={styles.largeTitle}>Create Your Account</Text>
-      <Text style={styles.subtitle}>
-        Join Promptify and unlock powerful prompts across every category.
+      <Text style={[styles.largeTitle, { color: theme.text }]}>Create Your Account</Text>
+      <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
+        Join PromptNest and unlock powerful prompts across every category.
       </Text>
 
       <View style={styles.signUpFormArea}>
@@ -350,13 +399,17 @@ export function SignUpScreen({
         activeOpacity={0.8}
         onPress={() => setHasAcceptedTerms((value) => !value)}
         style={styles.termsRow}>
-        <View style={[styles.checkbox, hasAcceptedTerms && styles.checkedBox]}>
-          {hasAcceptedTerms && <Feather name="check" size={15} color={COLORS.white} />}
+        <View style={[
+          styles.checkbox,
+          { borderColor: isDark ? '#4F586A' : '#BDC3D1' },
+          hasAcceptedTerms && styles.checkedBox
+        ]}>
+          {hasAcceptedTerms && <Feather name="check" size={15} color="#FFFFFF" />}
         </View>
 
-        <Text style={styles.termsText}>
-          I agree to the <Text style={styles.linkText}>Terms of Service</Text> and{' '}
-          <Text style={styles.linkText}>Privacy Policy</Text>
+        <Text style={[styles.termsText, { color: theme.text }]}>
+          I agree to the <Text style={[styles.linkText, { color: isDark ? '#8F67FF' : '#4F22F4' }]}>Terms of Service</Text> and{' '}
+          <Text style={[styles.linkText, { color: isDark ? '#8F67FF' : '#4F22F4' }]}>Privacy Policy</Text>
         </Text>
       </TouchableOpacity>
 
@@ -380,14 +433,17 @@ export function ForgotPasswordScreen({
   onBackToSignIn?: () => void;
   onSendResetLink?: () => void;
 }) {
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
+
   return (
     <AuthScaffold compact>
       <View style={styles.centerScreenTopSpacing} />
       <BrandHeader centered />
       <AuthIllustration variant="forgot" />
 
-      <Text style={styles.centerTitle}>Forgot Password?</Text>
-      <Text style={styles.centerSubtitle}>
+      <Text style={[styles.centerTitle, { color: theme.text }]}>Forgot Password?</Text>
+      <Text style={[styles.centerSubtitle, { color: theme.textSecondary }]}>
         No worries. Enter your email and we will help you create a new password.
       </Text>
 
@@ -404,7 +460,7 @@ export function ForgotPasswordScreen({
       <GradientButton title="Send Reset Link" onPress={onSendResetLink} />
 
       <TouchableOpacity activeOpacity={0.7} onPress={onBackToSignIn}>
-        <Text style={styles.centerLink}>Back to Sign In</Text>
+        <Text style={[styles.centerLink, { color: isDark ? '#8F67FF' : '#4F22F4' }]}>Back to Sign In</Text>
       </TouchableOpacity>
     </AuthScaffold>
   );
@@ -423,6 +479,8 @@ export function EmailVerificationScreen({
 }) {
   const [otp, setOtp] = useState(['', '', '', '']);
   const inputs = useRef<(TextInput | null)[]>([]);
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
 
   const updateOtp = (value: string, index: number) => {
     const digit = value.replace(/\D/g, '').slice(-1);
@@ -441,9 +499,9 @@ export function EmailVerificationScreen({
       <BrandHeader centered />
       <AuthIllustration variant="verify" />
 
-      <Text style={styles.centerTitle}>Verify Your Email</Text>
-      <Text style={styles.centerSubtitle}>
-        We sent a verification code to <Text style={styles.linkText}>{email}</Text>
+      <Text style={[styles.centerTitle, { color: theme.text }]}>Verify Your Email</Text>
+      <Text style={[styles.centerSubtitle, { color: theme.textSecondary }]}>
+        We sent a verification code to <Text style={[styles.linkText, { color: isDark ? '#8F67FF' : '#4F22F4' }]}>{email}</Text>
       </Text>
 
       <View style={styles.otpRow}>
@@ -462,9 +520,16 @@ export function EmailVerificationScreen({
               }
             }}
             placeholder="0"
-            placeholderTextColor="#CBD0DC"
+            placeholderTextColor={isDark ? '#4F586A' : '#CBD0DC'}
             selectTextOnFocus
-            style={styles.otpInput}
+            style={[
+              styles.otpInput,
+              {
+                borderColor: isDark ? '#2D3035' : '#DCDDE6',
+                color: theme.text,
+                backgroundColor: isDark ? '#1E2022' : '#FFFFFF',
+              },
+            ]}
             textContentType="oneTimeCode"
             value={digit}
           />
@@ -474,13 +539,13 @@ export function EmailVerificationScreen({
       <GradientButton title="Verify Code" onPress={() => onVerify?.(otp.join(''))} />
 
       <TouchableOpacity activeOpacity={0.7} onPress={onResend}>
-        <Text style={styles.resendText}>
-          Did not receive code? <Text style={styles.linkText}>Resend</Text>
+        <Text style={[styles.resendText, { color: theme.textSecondary }]}>
+          Did not receive code? <Text style={[styles.linkText, { color: isDark ? '#8F67FF' : '#4F22F4' }]}>Resend</Text>
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity activeOpacity={0.7} onPress={onBack}>
-        <Text style={styles.centerLink}>Back</Text>
+        <Text style={[styles.centerLink, { color: isDark ? '#8F67FF' : '#4F22F4' }]}>Back</Text>
       </TouchableOpacity>
     </AuthScaffold>
   );
@@ -493,14 +558,17 @@ export function ResetPasswordScreen({
   onBackToSignIn?: () => void;
   onResetPassword?: () => void;
 }) {
+  const theme = useTheme();
+  const isDark = theme.background === '#000000';
+
   return (
     <AuthScaffold compact>
       <View style={styles.centerScreenTopSpacing} />
       <BrandHeader centered />
       <AuthIllustration variant="reset" />
 
-      <Text style={styles.centerTitle}>Reset Password</Text>
-      <Text style={styles.centerSubtitle}>Create a new secure password for your Promptify account.</Text>
+      <Text style={[styles.centerTitle, { color: theme.text }]}>Reset Password</Text>
+      <Text style={[styles.centerSubtitle, { color: theme.textSecondary }]}>Create a new secure password for your PromptNest account.</Text>
 
       <View style={styles.resetFormArea}>
         <AuthInput
@@ -522,7 +590,7 @@ export function ResetPasswordScreen({
       <GradientButton title="Reset Password" onPress={onResetPassword} />
 
       <TouchableOpacity activeOpacity={0.7} onPress={onBackToSignIn}>
-        <Text style={styles.centerLink}>Back to Sign In</Text>
+        <Text style={[styles.centerLink, { color: isDark ? '#8F67FF' : '#4F22F4' }]}>Back to Sign In</Text>
       </TouchableOpacity>
     </AuthScaffold>
   );
