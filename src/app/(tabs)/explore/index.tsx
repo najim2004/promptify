@@ -103,7 +103,11 @@ export default function ExploreCategoriesScreen() {
             <Text style={styles.brandText}>Promptify</Text>
           </View>
 
-          <TouchableOpacity activeOpacity={0.75} style={styles.notificationBtn}>
+          <TouchableOpacity
+            activeOpacity={0.75}
+            style={styles.notificationBtn}
+            onPress={() => router.push("/notifications" as any)}
+          >
             <Feather name="bell" size={22} color="#111827" />
             <View style={styles.badge}>
               <Text style={styles.badgeText}>3</Text>
@@ -125,7 +129,12 @@ export default function ExploreCategoriesScreen() {
           contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 84 }]}
         >
           {categoriesList.map((item) => (
-            <TouchableOpacity key={item.id} style={styles.categoryCard} activeOpacity={0.8}>
+            <TouchableOpacity
+              key={item.id}
+              style={styles.categoryCard}
+              activeOpacity={0.8}
+              onPress={() => router.push("/explore/category-details" as any)}
+            >
               <View style={styles.cardLeft}>
                 <LinearGradient
                   colors={item.colors}

@@ -87,6 +87,7 @@ const categories = [
 
 export default function SearchScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   // Filter selection states
@@ -122,7 +123,11 @@ export default function SearchScreen() {
             <Text style={styles.brandText}>Promptify</Text>
           </View>
 
-          <TouchableOpacity activeOpacity={0.75} style={styles.notificationBtn}>
+          <TouchableOpacity
+            activeOpacity={0.75}
+            style={styles.notificationBtn}
+            onPress={() => router.push("/notifications" as any)}
+          >
             <Feather name="bell" size={22} color="#111827" />
             <View style={styles.badge}>
               <Text style={styles.badgeText}>3</Text>

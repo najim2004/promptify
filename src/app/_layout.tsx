@@ -73,6 +73,7 @@ export default function RootLayout() {
         <View style={styles.appShell}>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="notifications" />
             <Stack.Screen name="sign-in" />
             <Stack.Screen name="sign-up" />
             <Stack.Screen name="forgot-password" />

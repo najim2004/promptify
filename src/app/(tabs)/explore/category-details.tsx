@@ -1,6 +1,7 @@
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Image, type ImageProps } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -8,7 +9,6 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -26,73 +26,70 @@ type PromptCard = {
   id: string;
   type: PromptCardType;
   title: string;
-  tool: "Midjourney" | "Runway" | "ChatGPT";
+  tool: "Midjourney" | "Runway" | "ChatGPT" | "DALL·E";
   image?: ImageProps["source"];
   duration?: string;
 };
 
-const homePrompts: PromptCard[] = [
+const categoryPrompts: PromptCard[] = [
   {
     id: "1",
     type: "image",
-    title: "Cinematic cyberpunk city at night with neon lights and rain reflections",
+    title: "Enchanted forest with ancient trees, magical light, and a hidden castle",
     tool: "Midjourney",
-    image: require("@/assets/promptify/cyberpunk.png"),
+    image: require("@/assets/promptify/enchanted_forest.png"),
   },
   {
     id: "2",
-    type: "video",
-    title: "Astronaut exploring a distant planet in 4K",
+    type: "image",
+    title: "Astronaut exploring a distant planet, cinematic sci-fi landscape",
     tool: "Runway",
     image: require("@/assets/promptify/astronaut.png"),
-    duration: "0:08",
   },
   {
     id: "3",
-    type: "text",
-    title:
-      "Write a Twitter thread about the future of AI in education. Include 5 key points and end with a call to action for teachers.",
-    tool: "ChatGPT",
+    type: "image",
+    title: "Futuristic sports car racing through a neon city at night",
+    tool: "Midjourney",
+    image: require("@/assets/promptify/futuristic_car.png"),
   },
   {
     id: "4",
+    type: "image",
+    title: "Cinematic portrait of a woman with neon lighting and bokeh background",
+    tool: "DALL·E",
+    image: require("@/assets/promptify/portrait.png"),
+  },
+  {
+    id: "5",
     type: "image",
     title: "Cozy cabin in the woods surrounded by mist and a flowing river",
     tool: "Midjourney",
     image: require("@/assets/promptify/cabin.png"),
   },
   {
-    id: "5",
-    type: "video",
-    title: "Cinematic portrait with neon lighting and bokeh",
-    tool: "Runway",
-    image: require("@/assets/promptify/portrait.png"),
-    duration: "0:06",
-  },
-  {
     id: "6",
-    type: "code",
-    title: "Python function to generate Fibonacci sequence",
-    tool: "ChatGPT",
-    image: require("@/assets/promptify/code.png"),
+    type: "image",
+    title: "Cinematic cyberpunk city at night with neon lights and rain reflections",
+    tool: "Midjourney",
+    image: require("@/assets/promptify/cyberpunk.png"),
   },
 ];
 
-const categories = [
-  { label: "All", icon: null },
-  { label: "AI Image", icon: "image-outline" },
-  { label: "AI Video", icon: "play-outline" },
-  { label: "ChatGPT", icon: "sparkles-outline" },
-  { label: "Design", icon: "brush-outline" },
+const filterChips = [
+  { label: "Latest", icon: "clock" },
+  { label: "Popular", icon: "flame" },
+  { label: "Most Copied", icon: "copy" },
+  { label: "Filter", icon: "sliders" },
 ];
 
-export default function HomeScreen() {
+export default function CategoryDetailsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const [showOfflineAlert, setShowOfflineAlert] = useState(true);
+  const [activeFilter, setActiveFilter] = useState("Latest");
 
-  const leftColumn = homePrompts.filter((_, index) => index % 2 === 0);
-  const rightColumn = homePrompts.filter((_, index) => index % 2 !== 0);
+  const leftColumn = categoryPrompts.filter((_, index) => index % 2 === 0);
+  const rightColumn = categoryPrompts.filter((_, index) => index % 2 !== 0);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -101,6 +98,14 @@ export default function HomeScreen() {
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            activeOpacity={0.75}
+          >
+            <Feather name="arrow-left" size={20} color="#111827" />
+          </TouchableOpacity>
+
           <View style={styles.brandArea}>
             <Image
               source={require("@/assets/promptify/logo.png")}
@@ -123,98 +128,79 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {showOfflineAlert ? (
-          <NoInternetView onDismiss={() => setShowOfflineAlert(false)} />
-        ) : (
-          <>
-            <View style={styles.searchBox}>
-              <Feather name="search" size={20} color="#374151" />
-              <TextInput
-                placeholder="Search prompts, tools, or categories..."
-                placeholderTextColor="#606879"
-                style={styles.searchInput}
-              />
+        {/* Category Banner */}
+        <View style={styles.bannerContainer}>
+          <LinearGradient
+            colors={["#F3A052", "#C65A11"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.iconGradient}
+          >
+            <Feather name="image" size={26} color="#FFFFFF" />
+          </LinearGradient>
+
+          <View style={styles.bannerTextContainer}>
+            <Text style={styles.bannerTitle}>AI Image</Text>
+            <Text style={styles.bannerDescription}>
+              Explore high-quality image generation prompts
+            </Text>
+            <Text style={styles.bannerCount}>4.7K Prompts</Text>
+          </View>
+        </View>
+
+        {/* Filter Chips */}
+        <View style={{ height: 62 }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryRow}
+          >
+            {filterChips.map((item) => {
+              const isActive = activeFilter === item.label;
+
+              return (
+                <TouchableOpacity
+                  key={item.label}
+                  activeOpacity={0.8}
+                  style={[styles.chip, isActive && styles.activeChip]}
+                  onPress={() => setActiveFilter(item.label)}
+                >
+                  <Feather
+                    name={item.icon as any}
+                    size={15}
+                    color={isActive ? "#FFFFFF" : "#1F2937"}
+                    style={styles.chipIcon}
+                  />
+                  <Text style={[styles.chipText, isActive && styles.activeChipText]}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+
+        {/* Feed Content */}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[styles.feedContent, { paddingBottom: insets.bottom + 84 }]}
+        >
+          <View style={styles.grid}>
+            <View style={styles.column}>
+              {leftColumn.map((item) => (
+                <PromptCardItem key={item.id} item={item} />
+              ))}
             </View>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.categoryRow}
-            >
-              {categories.map((item, index) => {
-                const isActive = index === 0;
-
-                return (
-                  <TouchableOpacity
-                    key={item.label}
-                    activeOpacity={0.8}
-                    style={[styles.chip, isActive && styles.activeChip]}
-                  >
-                    {item.icon && (
-                      <Ionicons
-                        name={item.icon as any}
-                        size={16}
-                        color={isActive ? "#FFFFFF" : "#1F2937"}
-                        style={styles.chipIcon}
-                      />
-                    )}
-                    <Text style={[styles.chipText, isActive && styles.activeChipText]}>
-                      {item.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={[styles.feedContent, { paddingBottom: insets.bottom + 84 }]}
-            >
-              <View style={styles.grid}>
-                <View style={styles.column}>
-                  {leftColumn.map((item) => (
-                    <PromptCardItem key={item.id} item={item} />
-                  ))}
-                </View>
-
-                <View style={styles.column}>
-                  {rightColumn.map((item) => (
-                    <PromptCardItem key={item.id} item={item} />
-                  ))}
-                </View>
-              </View>
-            </ScrollView>
-          </>
-        )}
+            <View style={styles.column}>
+              {rightColumn.map((item) => (
+                <PromptCardItem key={item.id} item={item} />
+              ))}
+            </View>
+          </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
-  );
-}
-
-function NoInternetView({ onDismiss }: { onDismiss: () => void }) {
-  return (
-    <View style={styles.offlineContainer}>
-      <Image
-        source={require("@/assets/promptify/no_internet.png")}
-        style={styles.offlineImage}
-        contentFit="contain"
-      />
-      
-      <Text style={styles.offlineTitle}>No Internet Connection</Text>
-      <Text style={styles.offlineSubtitle}>
-        Looks like you're offline. Check your connection and try again.
-      </Text>
-
-      <TouchableOpacity style={styles.tryAgainBtn} activeOpacity={0.8} onPress={onDismiss}>
-        <Ionicons name="refresh-outline" size={18} color="#FFFFFF" style={{ marginRight: 8 }} />
-        <Text style={styles.tryAgainText}>Try Again</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.settingsBtn} activeOpacity={0.7} onPress={onDismiss}>
-        <Ionicons name="settings-outline" size={18} color="#7047F8" style={{ marginRight: 8 }} />
-        <Text style={styles.settingsText}>Go to Settings</Text>
-      </TouchableOpacity>
-    </View>
   );
 }
 
@@ -274,15 +260,24 @@ function PromptCardItem({ item }: { item: PromptCard }) {
 
         <View style={styles.toolRow}>
           <View style={styles.toolInfo}>
-            {item.tool === "ChatGPT" ? (
-              <MaterialCommunityIcons name="chat-processing" size={16} color="#20B486" />
+            {item.tool === "ChatGPT" || item.tool === "DALL·E" ? (
+              <MaterialCommunityIcons
+                name="chat-processing"
+                size={16}
+                color={item.tool === "ChatGPT" ? "#20B486" : "#7047F8"}
+              />
             ) : item.tool === "Runway" ? (
               <Ionicons name="infinite" size={16} color="#111827" />
             ) : (
               <Ionicons name="boat-outline" size={16} color="#7047F8" />
             )}
 
-            <Text style={[styles.toolName, item.tool === "Midjourney" && styles.midjourneyToolText]}>
+            <Text
+              style={[
+                styles.toolName,
+                (item.tool === "Midjourney" || item.tool === "DALL·E") && styles.purpleToolText,
+              ]}
+            >
               {item.tool}
             </Text>
           </View>
@@ -310,6 +305,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
   },
   brandArea: {
     flexDirection: "row",
@@ -349,30 +354,46 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: "#FFFFFF",
   },
-  searchBox: {
-    marginHorizontal: HORIZONTAL_PADDING,
-    height: 48,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#DCDDE6",
-    backgroundColor: "#FFFFFF",
+  bannerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
+    paddingHorizontal: HORIZONTAL_PADDING,
+    marginTop: 12,
+    marginBottom: 16,
   },
-  searchInput: {
+  iconGradient: {
+    width: 68,
+    height: 68,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
+  },
+  bannerTextContainer: {
     flex: 1,
-    marginLeft: 10,
-    fontFamily: "Poppins_400Regular",
-    fontSize: 14,
+  },
+  bannerTitle: {
+    fontFamily: "Poppins_700Bold",
+    fontSize: 24,
     color: "#111827",
-    paddingVertical: 0,
+    marginBottom: 2,
+  },
+  bannerDescription: {
+    fontFamily: "Poppins_400Regular",
+    fontSize: 12,
+    color: "#6B7280",
+    marginBottom: 4,
+    lineHeight: 16,
+  },
+  bannerCount: {
+    fontFamily: "Poppins_500Medium",
+    fontSize: 12,
+    color: "#9CA3AF",
   },
   categoryRow: {
     paddingHorizontal: HORIZONTAL_PADDING,
-    paddingTop: 16,
-    paddingBottom: 12,
-    marginBottom: 16,
+    paddingTop: 4,
+    paddingBottom: 16,
     backgroundColor: "transparent",
   },
   chip: {
@@ -508,66 +529,7 @@ const styles = StyleSheet.create({
     color: "#7047F8",
     marginLeft: 6,
   },
-  midjourneyToolText: {
+  purpleToolText: {
     color: "#7047F8",
-  },
-  offlineContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    backgroundColor: "#FFFFFF",
-  },
-  offlineImage: {
-    width: 240,
-    height: 240,
-    marginBottom: 32,
-  },
-  offlineTitle: {
-    fontFamily: "Poppins_700Bold",
-    fontSize: 22,
-    color: "#111827",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  offlineSubtitle: {
-    fontFamily: "Poppins_400Regular",
-    fontSize: 14,
-    color: "#6B7280",
-    textAlign: "center",
-    lineHeight: 20,
-    marginBottom: 32,
-    paddingHorizontal: 16,
-  },
-  tryAgainBtn: {
-    backgroundColor: "#7047F8",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    height: 52,
-    borderRadius: 26,
-    width: "100%",
-    marginBottom: 20,
-    shadowColor: "#7047F8",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  tryAgainText: {
-    fontFamily: "Poppins_600SemiBold",
-    color: "#FFFFFF",
-    fontSize: 15,
-  },
-  settingsBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-  },
-  settingsText: {
-    fontFamily: "Poppins_600SemiBold",
-    color: "#7047F8",
-    fontSize: 15,
   },
 });
