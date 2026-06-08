@@ -78,8 +78,75 @@ const savedPrompts: PromptCard[] = [
 
 export default function SavedScreen() {
   const insets = useSafeAreaInsets();
-  const leftColumn = savedPrompts.filter((_, index) => index % 2 === 0);
-  const rightColumn = savedPrompts.filter((_, index) => index % 2 !== 0);
+  const router = useRouter();
+  const [savedItems, setSavedItems] = React.useState<PromptCard[]>(savedPrompts);
+
+  const leftColumn = savedItems.filter((_, index) => index % 2 === 0);
+  const rightColumn = savedItems.filter((_, index) => index % 2 !== 0);
+
+  const handleRemoveItem = (id: string) => {
+    setSavedItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  if (savedItems.length === 0) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+
+        <View style={styles.container}>
+          {/* Brand Header */}
+          <View style={styles.header}>
+            <View style={styles.brandArea}>
+              <Image
+                source={require("@/assets/promptify/logo.png")}
+                style={styles.logo}
+                contentFit="contain"
+                cachePolicy="memory-disk"
+              />
+              <Text style={styles.brandText}>Promptify</Text>
+            </View>
+
+            <TouchableOpacity
+              activeOpacity={0.75}
+              style={styles.notificationBtn}
+              onPress={() => router.push("/notifications" as any)}
+            >
+              <Feather name="bell" size={22} color="#111827" />
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>3</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* Empty State Body */}
+          <View style={styles.emptyContainer}>
+            <Image
+              source={require("@/assets/promptify/no_saved.png")}
+              style={styles.emptyImage}
+              contentFit="contain"
+              cachePolicy="memory-disk"
+            />
+
+            <Text style={styles.emptyTitle}>No Saved Prompts Yet</Text>
+            <Text style={styles.emptySubtitle}>
+              Save prompts you love to view them later.
+            </Text>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.exploreBtn}
+              onPress={() => {
+                router.replace("/(tabs)");
+              }}
+            >
+              <Feather name="compass" size={20} color="#FFFFFF" style={styles.exploreIcon} />
+              <Text style={styles.exploreBtnText}>Explore Prompts</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -98,8 +165,15 @@ export default function SavedScreen() {
             <Text style={styles.brandText}>Promptify</Text>
           </View>
 
-          <TouchableOpacity activeOpacity={0.7} style={styles.editBtn}>
-            <Text style={styles.editBtnText}>Edit</Text>
+          <TouchableOpacity
+            activeOpacity={0.75}
+            style={styles.notificationBtn}
+            onPress={() => router.push("/notifications" as any)}
+          >
+            <Feather name="bell" size={22} color="#111827" />
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>3</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -117,13 +191,13 @@ export default function SavedScreen() {
           <View style={styles.grid}>
             <View style={styles.column}>
               {leftColumn.map((item) => (
-                <PromptCardItem key={item.id} item={item} />
+                <PromptCardItem key={item.id} item={item} onRemove={handleRemoveItem} />
               ))}
             </View>
 
             <View style={styles.column}>
               {rightColumn.map((item) => (
-                <PromptCardItem key={item.id} item={item} />
+                <PromptCardItem key={item.id} item={item} onRemove={handleRemoveItem} />
               ))}
             </View>
           </View>
@@ -133,7 +207,7 @@ export default function SavedScreen() {
   );
 }
 
-function PromptCardItem({ item }: { item: PromptCard }) {
+function PromptCardItem({ item, onRemove }: { item: PromptCard; onRemove: (id: string) => void }) {
   const isText = item.type === "text";
   const isCode = item.type === "code";
 
@@ -211,7 +285,9 @@ function PromptCardItem({ item }: { item: PromptCard }) {
             </Text>
           </View>
 
-          <Feather name="bookmark" size={18} color="#7047F8" />
+          <TouchableOpacity activeOpacity={0.6} onPress={() => onRemove(item.id)} style={{ padding: 4 }}>
+            <Feather name="bookmark" size={18} color="#7047F8" />
+          </TouchableOpacity>
         </View>
       </View>
     </TouchableOpacity>
@@ -250,14 +326,28 @@ const styles = StyleSheet.create({
     color: "#111827",
     letterSpacing: 0.1,
   },
-  editBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+  notificationBtn: {
+    width: 36,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  editBtnText: {
+  badge: {
+    position: "absolute",
+    top: 1,
+    right: 0,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: "#7047F8",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 4,
+  },
+  badgeText: {
     fontFamily: "Poppins_600SemiBold",
-    fontSize: 16,
-    color: "#7047F8",
+    fontSize: 9,
+    color: "#FFFFFF",
   },
   titleArea: {
     paddingHorizontal: HORIZONTAL_PADDING,
@@ -383,5 +473,57 @@ const styles = StyleSheet.create({
   },
   purpleToolText: {
     color: "#7047F8",
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    backgroundColor: "#FFFFFF",
+    marginTop: -40,
+  },
+  emptyImage: {
+    width: width * 0.72,
+    height: width * 0.72,
+    marginBottom: 28,
+  },
+  emptyTitle: {
+    fontFamily: "Poppins_700Bold",
+    fontSize: 24,
+    color: "#0F172A",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  emptySubtitle: {
+    fontFamily: "Poppins_400Regular",
+    fontSize: 15,
+    color: "#64748B",
+    textAlign: "center",
+    lineHeight: 22,
+    marginBottom: 32,
+    paddingHorizontal: 20,
+  },
+  exploreBtn: {
+    backgroundColor: "#7047F8",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 52,
+    borderRadius: 16,
+    width: "100%",
+    shadowColor: "#7047F8",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 3,
+    maxWidth: 280,
+  },
+  exploreIcon: {
+    marginRight: 8,
+  },
+  exploreBtnText: {
+    fontFamily: "Poppins_600SemiBold",
+    color: "#FFFFFF",
+    fontSize: 16,
   },
 });
