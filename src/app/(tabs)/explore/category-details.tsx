@@ -224,6 +224,7 @@ export default function CategoryDetailsScreen() {
 }
 
 function PromptCardItem({ item }: { item: PromptCard }) {
+  const router = useRouter();
   const theme = useTheme();
   const isDark = theme.background === "#000000";
   const cardBg = isDark ? "#1E2022" : "#FFFFFF";
@@ -235,7 +236,23 @@ function PromptCardItem({ item }: { item: PromptCard }) {
   const isCode = item.type === "code";
 
   return (
-    <TouchableOpacity activeOpacity={0.86} style={[styles.card, { backgroundColor: cardBg, borderColor }]}>
+    <TouchableOpacity
+      activeOpacity={0.86}
+      style={[styles.card, { backgroundColor: cardBg, borderColor }]}
+      onPress={() => {
+        router.push({
+          pathname: "/prompt-details",
+          params: {
+            id: item.id,
+            title: item.title,
+            tool: item.tool,
+            type: item.type,
+            duration: item.duration || "",
+            image: typeof item.image === "string" ? item.image : ""
+          }
+        });
+      }}
+    >
       {isText ? (
         <View style={[styles.textCardBody, { backgroundColor: isDark ? "#25262B" : "#FAF9FF" }]}>
           <View style={styles.smallPurpleIcon}>

@@ -382,6 +382,7 @@ export default function SearchScreen() {
 }
 
 function PromptCardItem({ item }: { item: PromptCard }) {
+  const router = useRouter();
   const isText = item.type === "text";
   const isCode = item.type === "code";
   const theme = useTheme();
@@ -394,7 +395,23 @@ function PromptCardItem({ item }: { item: PromptCard }) {
   const textBodyBg = isDark ? "#242629" : "#FAF9FF";
 
   return (
-    <TouchableOpacity activeOpacity={0.86} style={[styles.card, { backgroundColor: cardBg, borderColor }]}>
+    <TouchableOpacity
+      activeOpacity={0.86}
+      style={[styles.card, { backgroundColor: cardBg, borderColor }]}
+      onPress={() => {
+        router.push({
+          pathname: "/prompt-details",
+          params: {
+            id: item.id,
+            title: item.title,
+            tool: item.tool,
+            type: item.type,
+            duration: item.duration || "",
+            image: typeof item.image === "string" ? item.image : ""
+          }
+        });
+      }}
+    >
       {isText ? (
         <View style={[styles.textCardBody, { backgroundColor: textBodyBg }]}>
           <View style={styles.smallPurpleIcon}>

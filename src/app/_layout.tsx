@@ -80,6 +80,7 @@ export default function RootLayout() {
             <Stack.Screen name="forgot-password" />
             <Stack.Screen name="verify-email" />
             <Stack.Screen name="reset-password" />
+            <Stack.Screen name="prompt-details" />
           </Stack>
           {isOnboardingVisible && (
             <View style={[styles.overlay, { backgroundColor: colorScheme === 'dark' ? '#000000' : '#ffffff' }]}>
